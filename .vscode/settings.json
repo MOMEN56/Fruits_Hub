@@ -1,6 +1,8 @@
 {
         "cSpell.words": [
                 "backgroundimage",
-                "Executenavigation"
-        ]
+                "Executenavigation",
+                "Signinwith"
+        ],
+        "cmake.sourceDirectory": "D:/flutter/fruit_hub/linux"
 }
