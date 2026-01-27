@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/notification_widget.dart';
-import 'package:fruit_hub/core/utils/app_text_styles.dart';
+
+import '../utils/app_text_styles.dart';
 
 AppBar buildAppBar(context, {required String title}) {
   return AppBar(
