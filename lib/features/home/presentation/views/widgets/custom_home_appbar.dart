@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fruit_hub/core/helper_fun/get_user.dart';
 import 'package:fruit_hub/core/notification_widget.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
@@ -16,8 +17,8 @@ class CustomHomeAppbar extends StatelessWidget {
         textAlign: TextAlign.right,
         style: TextStyles.regular16.copyWith(color: const Color(0xFF949D9E)),
       ),
-      subtitle: const Text(
-        'أحمد مصطفي',
+      subtitle: Text(
+        getUser().name,
         textAlign: TextAlign.right,
         style: TextStyles.bold16,
       ),

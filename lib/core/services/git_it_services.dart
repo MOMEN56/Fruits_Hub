@@ -1,3 +1,5 @@
+import 'package:fruit_hub/core/repos/products_repo/products_repo.dart';
+import 'package:fruit_hub/core/repos/products_repo/products_repo_impl.dart';
 import 'package:fruit_hub/core/services/database_services.dart';
 import 'package:fruit_hub/core/services/firebase_auth_service.dart';
 import 'package:fruit_hub/core/services/firestore_services.dart';
@@ -15,5 +17,8 @@ void setupGitIt() {
       firebaseAuthService: getIt<FirebaseAuthService>(),
       databaseServices: getIt<DatabaseServices>(),
     ),
+  );
+  GetIt.I.registerSingleton<ProductsRepo>(
+    ProductsRepoImpl(getIt<DatabaseServices>()),
   );
 }

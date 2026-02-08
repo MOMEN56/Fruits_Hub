@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
+
+import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/errors/exceptions.dart';
 import 'package:fruit_hub/core/errors/failures.dart';
@@ -11,7 +14,6 @@ import 'package:fruit_hub/core/utils/backend_endpoints.dart';
 import 'package:fruit_hub/features/auth/data/models/user_model.dart';
 import 'package:fruit_hub/features/auth/domain/entites/user_entity.dart';
 import 'package:fruit_hub/features/auth/domain/repos/auth_repo.dart';
-import 'package:dartz/dartz.dart';
 
 class AuthRepoImpl extends AuthRepo {
   final FirebaseAuthService firebaseAuthService;
@@ -21,6 +23,7 @@ class AuthRepoImpl extends AuthRepo {
     required this.databaseServices,
     required this.firebaseAuthService,
   });
+
   @override
   Future<Either<Failure, UserEntity>> createUserWithEmailAndPassword(
     String email,
@@ -33,24 +36,17 @@ class AuthRepoImpl extends AuthRepo {
         email: email,
         password: password,
       );
-      var userEntity = UserEntity(name: name, email: email, uId: user.uid);
+
+      final userEntity = UserEntity(name: name, email: email, uId: user.uid);
+
       await addUserData(user: userEntity);
+      await saveUserData(user: userEntity);
+
       return right(userEntity);
-    } on CustomException catch (e) {
-      await deleteUser(user);
-      return left(ServerFailure(e.message));
     } catch (e) {
       await deleteUser(user);
-      log(
-        'Exception in AuthRepoImpl.createUserWithEmailAndPassword: ${e.toString()}',
-      );
-      return left(ServerFailure('حدث خطأ ما. الرجاء المحاولة مرة اخرى.'));
-    }
-  }
-
-  Future<void> deleteUser(User? user) async {
-    if (user != null) {
-      await firebaseAuthService.deleteUser();
+      log('Signup error: $e');
+      return left(ServerFailure('حدث خطأ ما'));
     }
   }
 
@@ -60,58 +56,51 @@ class AuthRepoImpl extends AuthRepo {
     String password,
   ) async {
     try {
-      var user = await firebaseAuthService.signInWithEmailAndPassword(
+      final user = await firebaseAuthService.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      var userEntity = await getUserData(uid: user.uid);
-      await saveUserData(user: userEntity);
-      return right(UserModel.fromFirebaseUser(user));
+
+      final userEntity = await _handleUserAfterAuth(user);
+
+      return right(userEntity);
     } on CustomException catch (e) {
       return left(ServerFailure(e.message));
     } catch (e) {
-      log(
-        'Exception in AuthRepoImpl.createUserWithEmailAndPassword: ${e.toString()}',
-      );
-      return left(ServerFailure('حدث خطأ ما. الرجاء المحاولة مرة اخرى.'));
+      log('Signin error: $e');
+      return left(ServerFailure('حدث خطأ ما'));
     }
   }
 
-  @override
   @override
   Future<Either<Failure, UserEntity>> signinWithGoogle() async {
     User? user;
     try {
       user = await firebaseAuthService.signInWithGoogle();
 
-      var userEntity = UserModel.fromFirebaseUser(user);
-      await addUserData(user: userEntity);
+      final userEntity = await _handleUserAfterAuth(user);
+
       return right(userEntity);
     } catch (e) {
       await deleteUser(user);
-      log(
-        'Exception in AuthRepoImpl.createUserWithEmailAndPassword: ${e.toString()}',
-      );
-      return left(ServerFailure('حدث خطأ ما. الرجاء المحاولة مرة اخرى.'));
+      log('Google signin error: $e');
+      return left(ServerFailure('حدث خطأ ما'));
     }
   }
 
-  @override
   @override
   Future<Either<Failure, UserEntity>> signinWithFacebook() async {
     User? user;
     try {
       user = await firebaseAuthService.signinWithFacebook();
-      var userEntity = UserModel.fromFirebaseUser(user);
-      await addUserData(user: userEntity);
+
+      final userEntity = await _handleUserAfterAuth(user);
 
       return right(userEntity);
     } catch (e) {
       await deleteUser(user);
-      log(
-        'Exception in AuthRepoImpl.createUserWithEmailAndPassword: ${e.toString()}',
-      );
-      return left(ServerFailure('حدث خطأ ما. الرجاء المحاولة مرة اخرى.'));
+      log('Facebook signin error: $e');
+      return left(ServerFailure('حدث خطأ ما'));
     }
   }
 
@@ -126,15 +115,42 @@ class AuthRepoImpl extends AuthRepo {
 
   @override
   Future<UserEntity> getUserData({required String uid}) async {
-    var userData = await databaseServices.getUserData(
+    final userData = await databaseServices.getUserData(
       path: BackendEndpoints.getUserData,
       docuementId: uid,
     );
+
     return UserModel.fromJson(userData);
   }
 
   Future saveUserData({required UserEntity user}) async {
-    var jsonData = jsonEncode(UserModel.fromEntity(user).toMap());
+    final jsonData = jsonEncode(UserModel.fromEntity(user).toMap());
     await Prefs.setString(kUserData, jsonData);
+  }
+
+  Future<UserEntity> _handleUserAfterAuth(User user) async {
+    final userData = await databaseServices.getUserData(
+      path: BackendEndpoints.getUserData,
+      docuementId: user.uid,
+    );
+
+    late UserEntity userEntity;
+
+    if (userData == null) {
+      userEntity = UserModel.fromFirebaseUser(user);
+      await addUserData(user: userEntity);
+    } else {
+      userEntity = UserModel.fromJson(userData);
+    }
+
+    await saveUserData(user: userEntity);
+
+    return userEntity;
+  }
+
+  Future<void> deleteUser(User? user) async {
+    if (user != null) {
+      await firebaseAuthService.deleteUser();
+    }
   }
 }
