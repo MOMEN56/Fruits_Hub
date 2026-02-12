@@ -39,7 +39,7 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
     pageController = PageController();
     pageController.addListener(() {
       setState(() {
-        currentPageIndex = pageController.page!.toInt();
+        currentPageIndex = pageController.page!.round();
       });
     });
     super.initState();
@@ -63,25 +63,29 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
           const SizedBox(height: 20),
           CheckoutSteps(
             onTap: (index) {
-              if (currentPageIndex == 0) {
+              if (index < currentPageIndex) {
+                // رجوع حر
                 pageController.animateToPage(
                   index,
                   duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeIn,
+                  curve: Curves.easeInOut,
                 );
-              } else if (index == 1) {
-                var orderEntity = context.read<OrderEntity>();
-                if (orderEntity.payWithCash != null) {
-                  pageController.animateToPage(
-                    index,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeIn,
-                  );
-                } else {
-                  buildSnackBar(context, 'يرجي تحديد طريقه الدفع');
-                }
+              } else if (index == currentPageIndex) {
+                return; // مفيش حاجة
               } else {
-                _handleAddressValidation();
+                // تقدم
+                if (currentPageIndex == 0) {
+                  if (context.read<OrderEntity>().payWithCash != null) {
+                    pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    buildSnackBar(context, 'يرجي تحديد طريقه الدفع');
+                  }
+                } else if (currentPageIndex == 1) {
+                  _handleAddressValidation(); // داخلها nextPage لو valid
+                }
               }
             },
             pageController: pageController,
@@ -162,7 +166,7 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
         builder:
             (BuildContext context) => PaypalCheckoutView(
               sandboxMode: true,
-              clientId: KPaypalSecretKey,
+              clientId: KPaypalClientId,
               secretKey: KPaypalSecretKey,
               transactions: [paypalPaymentEntity.toJson()],
               note: "Contact us for any questions on your order.",

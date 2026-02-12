@@ -15,20 +15,17 @@ class OrderEntity {
     required this.shippingAddressEntity,
   });
   double calculateShippingCost() {
-    if (payWithCash!) {
-      return 30;
-    } else {
-      return 0;
-    }
+    return payWithCash == true ? 30 : 0; // null-safe + simple
   }
 
-  double calcualteShippingDiscount() {
+  double calculateShippingDiscount() {
+    // تصحيح الإملاء
     return 0;
   }
 
   double calculateTotalPriceAfterDiscountAndShipping() {
     return cartEntity.calculateTotalPrice() +
         calculateShippingCost() -
-        calcualteShippingDiscount();
+        calculateShippingDiscount();
   }
 }

@@ -21,7 +21,8 @@ class OrderModel {
 
   factory OrderModel.fromEntity(OrderEntity orderEntity) {
     return OrderModel(
-      totalPrice: orderEntity.cartEntity.calculateTotalPrice(),
+      totalPrice:
+          orderEntity.calculateTotalPriceAfterDiscountAndShipping(), // كامل
       uID: orderEntity.uID,
       shippingAddressModel: ShippingAddressModel.fromEntity(
         orderEntity.shippingAddressEntity,
@@ -30,7 +31,8 @@ class OrderModel {
           orderEntity.cartEntity.cartItems
               .map((e) => OrderProductModel.fromEntity(cartItemEntity: e))
               .toList(),
-      paymentMethod: orderEntity.payWithCash! ? 'Cash' : 'Paypal',
+      paymentMethod:
+          (orderEntity.payWithCash == true) ? 'Cash' : 'Paypal', // شغال
     );
   }
   toJson() => {

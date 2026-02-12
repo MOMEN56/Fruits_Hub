@@ -25,4 +25,14 @@ class CartCubit extends Cubit<CartState> {
     cartEntity.removeCartItem(cartItem);
     emit(CartItemRemoved());
   }
+
+  void decreaseProductQuantity(ProductEntity productEntity) {
+    var cartItem = cartEntity.getCarItem(productEntity);
+    if (cartItem.quantity > 1) {
+      cartItem.decreasquantity(); // أو increase/decrease صح إملائيًا
+      emit(CartItemReset()); // state جديد لو عايز
+    } else {
+      deleteProduct(cartItem); // حذف لو 1
+    }
+  }
 }

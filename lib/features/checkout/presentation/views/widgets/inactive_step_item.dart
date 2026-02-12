@@ -10,10 +10,10 @@ class InActiveStepItem extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const CircleAvatar(
+        CircleAvatar(
           radius: 10,
           backgroundColor: Color(0xFFF2F3F3),
-          child: Text('2', style: TextStyles.semiBold13),
+          child: Text(index, style: TextStyles.semiBold13),
         ),
         const SizedBox(width: 4),
         Text(
