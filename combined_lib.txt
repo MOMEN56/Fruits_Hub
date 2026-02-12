@@ -1405,11 +1405,13 @@ class CustomTextFormField extends StatelessWidget {
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fruit_hub/core/entities/product_entity.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
+import 'package:fruit_hub/features/home/presentation/cubits/cubit/cart_cubit.dart';
 
 class FruitItem extends StatelessWidget {
   const FruitItem({super.key, required this.productEntity});
@@ -1475,9 +1477,14 @@ class FruitItem extends StatelessWidget {
                     ),
                     textAlign: TextAlign.right,
                   ),
-                  trailing: const CircleAvatar(
-                    backgroundColor: AppColors.primaryColor,
-                    child: Icon(Icons.add, color: Colors.white),
+                  trailing: GestureDetector(
+                    onTap: () {
+                      context.read<CartCubit>().addProduct(productEntity);
+                    },
+                    child: const CircleAvatar(
+                      backgroundColor: AppColors.primaryColor,
+                      child: Icon(Icons.add, color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -1760,6 +1767,30 @@ class AuthRepoImpl extends AuthRepo {
 
 
 
+import 'package:fruit_hub/core/entities/product_entity.dart';
+
+class CarItemEntity {
+  final ProductEntity productEntity;
+  int count;
+
+  CarItemEntity({required this.productEntity, this.count = 0});
+
+  num calculateTotalPrice() {
+    return productEntity.price * count;
+  }
+
+  num calculateTotalWeight() {
+    return productEntity.unitAmount * count;
+  }
+
+  void increasCount() {
+    count++;
+  }
+
+  void decreasCount() {
+    count--;
+  }
+}
 
 
 
@@ -2546,6 +2577,102 @@ List<BottomNavigationBarEntity> get bottomNavigationBarItems => [
 
 
 
+import 'package:fruit_hub/core/entities/product_entity.dart';
+import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
+
+class CartEntity {
+  final List<CarItemEntity> cartItems;
+
+  CartEntity(this.cartItems);
+
+  addCartItem(CarItemEntity cartItemEntity) {
+    cartItems.add(cartItemEntity);
+  }
+
+  bool isExis(ProductEntity product) {
+    for (var carItem in cartItems) {
+      if (carItem.productEntity == product) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  CarItemEntity getCarItem(ProductEntity product) {
+    for (var carItem in cartItems) {
+      if (carItem.productEntity == product) {
+        return carItem;
+      }
+    }
+    return CarItemEntity(productEntity: product, count: 1);
+  }
+}
+
+
+
+import 'package:bloc/bloc.dart';
+import 'package:fruit_hub/core/entities/product_entity.dart';
+import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
+import 'package:fruit_hub/features/home/domain/entites/cart_entity.dart';
+import 'package:meta/meta.dart';
+
+part 'cart_state.dart';
+
+class CartCubit extends Cubit<CartState> {
+  CartCubit() : super(CartInitial());
+
+  CartEntity cartEntity = CartEntity([]);
+  void addProduct(ProductEntity productEntity) {
+    bool isProductExist = cartEntity.isExis(productEntity);
+    var carItem = cartEntity.getCarItem(productEntity);
+    if (isProductExist) {
+      carItem.increasCount();
+    } else {
+      cartEntity.addCartItem(carItem);
+    }
+    emit(CartProductAdded());
+  }
+}
+
+
+
+part of 'cart_cubit.dart';
+
+@immutable
+sealed class CartState {}
+
+final class CartInitial extends CartState {}
+
+final class CartProductAdded extends CartState {}
+
+final class CartProductRemoved extends CartState {}
+
+
+
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+
+part 'cart_item_state.dart';
+
+class CartItemCubit extends Cubit<CartItemState> {
+  CartItemCubit() : super(CartItemInitial());
+}
+
+
+
+part of 'cart_item_cubit.dart';
+
+sealed class CartItemState extends Equatable {
+  const CartItemState();
+
+  @override
+  List<Object> get props => [];
+}
+
+final class CartItemInitial extends CartItemState {}
+
+
+
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/cart_view_body.dart';
 
@@ -2561,10 +2688,11 @@ class CartView extends StatelessWidget {
 
 
 import 'package:flutter/material.dart';
-import 'package:fruit_hub/features/home/presentation/views/cart_view.dart';
-import 'package:fruit_hub/features/home/presentation/views/products_view.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fruit_hub/features/home/presentation/cubits/cubit/cart_cubit.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/custom_bottom_navigation_bar.dart';
-import 'widgets/home_view.dart';
+import 'package:fruit_hub/features/home/presentation/views/widgets/main_view_body.dart';
+import 'package:fruit_hub/features/home/presentation/views/widgets/main_view_body_bloc_consumer.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
@@ -2579,18 +2707,18 @@ class _MainViewState extends State<MainView> {
   int currentViewIndex = 0;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: CustomBottomNavigationBar(
-        onItemTapped: (index) {
-          currentViewIndex = index;
+    return BlocProvider(
+      create: (context) => CartCubit(),
+      child: Scaffold(
+        bottomNavigationBar: CustomBottomNavigationBar(
+          onItemTapped: (index) {
+            currentViewIndex = index;
 
-          setState(() {});
-        },
-      ),
-      body: SafeArea(
-        child: IndexedStack(
-          index: currentViewIndex,
-          children: const [HomeView(), ProductsView(), CartView()],
+            setState(() {});
+          },
+        ),
+        body: SafeArea(
+          child: MainViewBodyBlocConsumer(currentViewIndex: currentViewIndex),
         ),
       ),
     );
@@ -2739,18 +2867,17 @@ class CartHeader extends StatelessWidget {
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fruit_hub/core/entities/product_entity.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
 import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
-import 'package:fruit_hub/features/auth/domain/entites/cart_entity.dart';
+import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/cart_item_action_buttons.dart';
-import '../../../../../core/entities/product_entity.dart';
 import '../../../../../core/utils/app_text_styles.dart';
 
 class CartItem extends StatelessWidget {
-  const CartItem({super.key, required this.cartEntity});
-  final CartEntity cartEntity;
+  const CartItem({super.key, required this.carItemEntity});
+
+  final CarItemEntity carItemEntity;
   @override
   Widget build(BuildContext context) {
     return IntrinsicHeight(
@@ -2761,7 +2888,7 @@ class CartItem extends StatelessWidget {
             height: 92,
             decoration: const BoxDecoration(color: Color(0xFFF3F5F7)),
             child: CustomNetworkImage(
-              imageUrl: CartEntity.ProductEntity.imageUrl!,
+              imageUrl: carItemEntity.productEntity.imageUrl!,
             ),
           ),
           const SizedBox(width: 17),
@@ -2772,7 +2899,10 @@ class CartItem extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Text('Ø¨Ø·ÙŠØ®', style: TextStyles.bold13),
+                    Text(
+                      carItemEntity.productEntity.name,
+                      style: TextStyles.bold13,
+                    ),
                     const Spacer(),
                     GestureDetector(
                       onTap: () {},
@@ -2781,7 +2911,7 @@ class CartItem extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  '3 ÙƒÙ…',
+                  '${carItemEntity.calculateTotalWeight()} ÙƒÙ…',
                   textAlign: TextAlign.right,
                   style: TextStyles.regular13.copyWith(
                     color: AppColors.secondaryColor,
@@ -2792,7 +2922,7 @@ class CartItem extends StatelessWidget {
                     const CartItemActionButtons(),
                     const Spacer(),
                     Text(
-                      '60 Ø¬Ù†ÙŠÙ‡ ',
+                      '${carItemEntity.calculateTotalPrice()} Ø¬Ù†ÙŠÙ‡ ',
                       style: TextStyles.bold16.copyWith(
                         color: AppColors.secondaryColor,
                       ),
@@ -2811,12 +2941,16 @@ class CartItem extends StatelessWidget {
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
+import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
+import 'package:fruit_hub/features/home/presentation/cubits/cart_item_cubit/cubit/cart_item_cubit.dart';
+import 'package:fruit_hub/features/home/presentation/views/widgets/cart_item.dart';
 
 class CartItemActionButtons extends StatelessWidget {
-  const CartItemActionButtons({super.key});
-
+  const CartItemActionButtons({super.key, required this.cartItemEntity});
+  final CarItemEntity cartItemEntity;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -2825,12 +2959,15 @@ class CartItemActionButtons extends StatelessWidget {
           iconColor: Colors.white,
           icon: Icons.add,
           color: AppColors.primaryColor,
-          onPressed: () {},
+          onPressed: () {
+            cartItemEntity.increasCount();
+            context.read<CartItemCubit>().updateCartItem(cartItemEntity);
+          },
         ),
-        const Padding(
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            '3',
+            cartItemEntity.count.toString(),
             textAlign: TextAlign.center,
             style: TextStyles.bold16,
           ),
@@ -2839,7 +2976,10 @@ class CartItemActionButtons extends StatelessWidget {
           iconColor: Colors.grey,
           icon: Icons.remove,
           color: const Color(0xFFF3F5F7),
-          onPressed: () {},
+          onPressed: () {
+            cartItemEntity.decreasCount();
+            context.read<CartItemCubit>().updateCartItem(cartItemEntity);
+          },
         ),
       ],
     );
@@ -2861,15 +3001,20 @@ class CartItemActionButton extends StatelessWidget {
   final VoidCallback onPressed;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 24,
-      height: 24,
-      padding: const EdgeInsets.all(2),
-      decoration: ShapeDecoration(
-        color: color,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: 24,
+        height: 24,
+        padding: const EdgeInsets.all(2),
+        decoration: ShapeDecoration(
+          color: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
+        ),
+        child: FittedBox(child: Icon(icon, color: iconColor)),
       ),
-      child: FittedBox(child: Icon(icon, color: iconColor)),
     );
   }
 }
@@ -2877,19 +3022,23 @@ class CartItemActionButton extends StatelessWidget {
 
 
 import 'package:flutter/material.dart';
-import 'package:fruit_hub/features/auth/domain/entites/cart_entity.dart';
+import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/cart_item.dart';
 
-class CartItemList extends StatelessWidget {
-  const CartItemList({super.key, required this.cartItems});
-  final List<CartEntity> cartItems;
+class CarItemsList extends StatelessWidget {
+  const CarItemsList({super.key, required this.carItems});
+
+  final List<CarItemEntity> carItems;
   @override
   Widget build(BuildContext context) {
     return SliverList.separated(
       separatorBuilder: (context, index) => const CustomDivider(),
-      itemCount: cartItems.length,
+      itemCount: carItems.length,
       itemBuilder: (context, index) {
-        return CartItem(cartEntity: cartItems[index]);
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: CartItem(carItemEntity: carItems[index]),
+        );
       },
     );
   }
@@ -2907,9 +3056,13 @@ class CustomDivider extends StatelessWidget {
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
+import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
+import 'package:fruit_hub/features/home/presentation/cubits/cart_item_cubit/cubit/cart_item_cubit.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/cart_header.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/cart_item_list.dart';
+import 'package:fruit_hub/features/home/presentation/views/widgets/custom_cart_button.dart';
 
 import '../../../../../constants.dart';
 import '../../../../../core/widgets/custom_app_bar.dart';
@@ -2934,16 +3087,28 @@ class CartViewBody extends StatelessWidget {
                 ],
               ),
             ),
-            const SliverToBoxAdapter(child: CustomDivider()),
-            const CartItemList(),
-            const SliverToBoxAdapter(child: CustomDivider()),
+            SliverToBoxAdapter(
+              child:
+                  context.read<CartCubit>().cartEntity.cartItems.isNotEmpty
+                      ? const CustomDivider()
+                      : SizedBox(),
+            ),
+            CarItemsList(
+              carItems: context.watch<CartCubit>().cartEntity.cartItems,
+            ),
+            SliverToBoxAdapter(
+              child:
+                  context.read<CartCubit>().cartEntity.cartItems.isNotEmpty
+                      ? const CustomDivider()
+                      : SizedBox(),
+            ),
           ],
         ),
         Positioned(
           left: 16,
           right: 16,
           bottom: MediaQuery.sizeOf(context).height * .07,
-          child: CustomButton(onPressed: () {}, text: 'Ø§Ù„Ø¯ÙØ¹  120Ø¬Ù†ÙŠÙ‡'),
+          child: CustomCartButton(),
         ),
       ],
     );
@@ -3014,6 +3179,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     );
   }
 }
+
+
+
 
 
 
@@ -3264,6 +3432,66 @@ class InActiveItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(color: Colors.transparent, child: SvgPicture.asset(image));
+  }
+}
+
+
+
+import 'package:flutter/material.dart';
+import 'package:fruit_hub/features/home/presentation/views/cart_view.dart';
+import 'package:fruit_hub/features/home/presentation/views/products_view.dart';
+import 'package:fruit_hub/features/home/presentation/views/widgets/home_view.dart';
+
+class MainViewBody extends StatelessWidget {
+  const MainViewBody({super.key, required this.currentViewIndex});
+
+  final int currentViewIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return IndexedStack(
+      index: currentViewIndex,
+      children: const [HomeView(), ProductsView(), CartView()],
+    );
+  }
+}
+
+
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fruit_hub/features/home/presentation/cubits/cubit/cart_cubit.dart';
+import 'package:fruit_hub/features/home/presentation/views/widgets/main_view_body.dart';
+
+class MainViewBodyBlocConsumer extends StatelessWidget {
+  const MainViewBodyBlocConsumer({super.key, required this.currentViewIndex});
+
+  final int currentViewIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<SubjectBloc, SubjectState>()<CartCubit, CartState>(
+      listener: (context, state) {
+        if (state is CartProductAdded) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Product added to cart'),
+              duration: Duration(seconds: 1),
+            ),
+          );
+        } else if (state is CartProductRemoved) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Product removed from cart'),
+              duration: Duration(seconds: 1),
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        return MainViewBody(currentViewIndex: currentViewIndex);
+      },
+    );
   }
 }
 
@@ -3827,324 +4055,11 @@ class S {
   }
 
   /// `Flash`
-  String get AppBarTitle {
-    return Intl.message('Flash', name: 'AppBarTitle', desc: '', args: []);
-  }
+}
 
-  /// `Currencies`
-  String get currency {
-    return Intl.message('Currencies', name: 'currency', desc: '', args: []);
-  }
-
-  /// `Crypto`
-  String get cyrpto {
-    return Intl.message('Crypto', name: 'cyrpto', desc: '', args: []);
-  }
-
-  /// `Metals`
-  String get metal {
-    return Intl.message('Metals', name: 'metal', desc: '', args: []);
-  }
-
-  /// `Gram`
-  String get gram {
-    return Intl.message('Gram', name: 'gram', desc: '', args: []);
-  }
-
-  /// `Ounce`
-  String get Ounce {
-    return Intl.message('Ounce', name: 'Ounce', desc: '', args: []);
-  }
-
-  /// `Kilogram`
-  String get kilo {
-    return Intl.message('Kilogram', name: 'kilo', desc: '', args: []);
-  }
-
-  /// `Tonne`
-  String get tonne {
-    return Intl.message('Tonne', name: 'tonne', desc: '', args: []);
-  }
-
-  /// `ID`
-  String get id {
-    return Intl.message('ID', name: 'id', desc: '', args: []);
-  }
-
-  /// `Symbol`
-  String get symbol {
-    return Intl.message('Symbol', name: 'symbol', desc: '', args: []);
-  }
-
-  /// `Name`
-  String get name {
-    return Intl.message('Name', name: 'name', desc: '', args: []);
-  }
-
-  /// `Image`
-  String get image {
-    return Intl.message('Image', name: 'image', desc: '', args: []);
-  }
-
-  /// `Current Price`
-  String get currentPrice {
-    return Intl.message(
-      'Current Price',
-      name: 'currentPrice',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Market Cap`
-  String get marketCap {
-    return Intl.message('Market Cap', name: 'marketCap', desc: '', args: []);
-  }
-
-  /// `Market Cap Rank`
-  String get marketCapRank {
-    return Intl.message(
-      'Market Cap Rank',
-      name: 'marketCapRank',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Fully Diluted Valuation`
-  String get fullyDilutedValuation {
-    return Intl.message(
-      'Fully Diluted Valuation',
-      name: 'fullyDilutedValuation',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Total Volume`
-  String get totalVolume {
-    return Intl.message(
-      'Total Volume',
-      name: 'totalVolume',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `High 24h`
-  String get high24h {
-    return Intl.message('High 24h', name: 'high24h', desc: '', args: []);
-  }
-
-  /// `Low 24h`
-  String get low24h {
-    return Intl.message('Low 24h', name: 'low24h', desc: '', args: []);
-  }
-
-  /// `Price Change 24h`
-  String get priceChange24h {
-    return Intl.message(
-      'Price Change 24h',
-      name: 'priceChange24h',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Price Change Percentage 24h`
-  String get priceChangePercentage24h {
-    return Intl.message(
-      'Price Change Percentage 24h',
-      name: 'priceChangePercentage24h',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Market Cap Change 24h`
-  String get marketCapChange24h {
-    return Intl.message(
-      'Market Cap Change 24h',
-      name: 'marketCapChange24h',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Market Cap Change Percentage 24h`
-  String get marketCapChangePercentage24h {
-    return Intl.message(
-      'Market Cap Change Percentage 24h',
-      name: 'marketCapChangePercentage24h',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Circulating Supply`
-  String get circulatingSupply {
-    return Intl.message(
-      'Circulating Supply',
-      name: 'circulatingSupply',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Total Supply`
-  String get totalSupply {
-    return Intl.message(
-      'Total Supply',
-      name: 'totalSupply',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Max Supply`
-  String get maxSupply {
-    return Intl.message('Max Supply', name: 'maxSupply', desc: '', args: []);
-  }
-
-  /// `All-Time High`
-  String get ath {
-    return Intl.message('All-Time High', name: 'ath', desc: '', args: []);
-  }
-
-  /// `ATH Change Percentage`
-  String get athChangePercentage {
-    return Intl.message(
-      'ATH Change Percentage',
-      name: 'athChangePercentage',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `ATH Date`
-  String get athDate {
-    return Intl.message('ATH Date', name: 'athDate', desc: '', args: []);
-  }
-
-  /// `All-Time Low`
-  String get atl {
-    return Intl.message('All-Time Low', name: 'atl', desc: '', args: []);
-  }
-
-  /// `ATL Change Percentage`
-  String get atlChangePercentage {
-    return Intl.message(
-      'ATL Change Percentage',
-      name: 'atlChangePercentage',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `ATL Date`
-  String get atlDate {
-    return Intl.message('ATL Date', name: 'atlDate', desc: '', args: []);
-  }
-
-  /// `Last Updated`
-  String get lastUpdated {
-    return Intl.message(
-      'Last Updated',
-      name: 'lastUpdated',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Search for a metal...`
-  String get SearchForAMetal {
-    return Intl.message(
-      'Search for a metal...',
-      name: 'SearchForAMetal',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Amount`
-  String get Amount {
-    return Intl.message('Amount', name: 'Amount', desc: '', args: []);
-  }
-
-  /// `Search for a currency...`
-  String get SearchForACurrency {
-    return Intl.message(
-      'Search for a currency...',
-      name: 'SearchForACurrency',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Search for a crypto...`
-  String get SearchForACrypto {
-    return Intl.message(
-      'Search for a crypto...',
-      name: 'SearchForACrypto',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `No cryptocurrencies found`
-  String get NoCryptoFound {
-    return Intl.message(
-      'No cryptocurrencies found',
-      name: 'NoCryptoFound',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `No metals found`
-  String get NoMetalsFound {
-    return Intl.message(
-      'No metals found',
-      name: 'NoMetalsFound',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `No currencies found`
-  String get NoCurrenciesFound {
-    return Intl.message(
-      'No currencies found',
-      name: 'NoCurrenciesFound',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `{currency}`
-  String currency_name(Object currency) {
-    return Intl.message(
-      '$currency',
-      name: 'currency_name',
-      desc: '',
-      args: [currency],
-    );
-  }
-
-  /// `    comparison currency`
-  String get comparison_currency {
-    return Intl.message(
-      '    comparison currency',
-      name: 'comparison_currency',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Ø¹Ø±Ø¨ÙŠ`
-  String get current_language {
-    return Intl.message('Ø¹Ø±Ø¨ÙŠ', name: 'current_language', desc: '', args: []);
-  }
+/// `Ø¹Ø±Ø¨ÙŠ`
+String get current_language {
+  return Intl.message('Ø¹Ø±Ø¨ÙŠ', name: 'current_language', desc: '', args: []);
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
@@ -4194,9 +4109,6 @@ import 'package:intl/intl.dart';
 import 'package:intl/message_lookup_by_library.dart';
 import 'package:intl/src/intl_helpers.dart';
 
-import 'messages_ar.dart' as messages_ar;
-import 'messages_en.dart' as messages_en;
-
 typedef Future<dynamic> LibraryLoader();
 Map<String, LibraryLoader> _deferredLibraries = {
   'ar': () => new SynchronousFuture(null),
@@ -4206,9 +4118,6 @@ Map<String, LibraryLoader> _deferredLibraries = {
 MessageLookupByLibrary? _findExact(String localeName) {
   switch (localeName) {
     case 'ar':
-      return messages_ar.messages;
-    case 'en':
-      return messages_en.messages;
     default:
       return null;
   }

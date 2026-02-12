@@ -49,6 +49,9 @@ dependencies:
   cloud_firestore: ^5.6.12
   flutter_svg_provider: ^1.0.7
   skeletonizer: ^1.4.3
+  equatable: ^2.0.8
+  provider: ^6.1.5+1
+  flutter_paypal_payment: ^1.0.8
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_test:

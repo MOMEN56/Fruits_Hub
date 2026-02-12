@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
+import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
+import 'package:fruit_hub/features/home/presentation/cubits/cart_item_cubit/cubit/cart_item_cubit.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/cart_header.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/cart_item_list.dart';
+import 'package:fruit_hub/features/home/presentation/views/widgets/custom_cart_button.dart';
 
 import '../../../../../constants.dart';
 import '../../../../../core/widgets/custom_app_bar.dart';
@@ -26,16 +30,28 @@ class CartViewBody extends StatelessWidget {
                 ],
               ),
             ),
-            const SliverToBoxAdapter(child: CustomDivider()),
-            const CarItemsList(carItems: []),
-            const SliverToBoxAdapter(child: CustomDivider()),
+            SliverToBoxAdapter(
+              child:
+                  context.read<CartCubit>().cartEntity.cartItems.isNotEmpty
+                      ? const CustomDivider()
+                      : SizedBox(),
+            ),
+            CarItemsList(
+              carItems: context.watch<CartCubit>().cartEntity.cartItems,
+            ),
+            SliverToBoxAdapter(
+              child:
+                  context.read<CartCubit>().cartEntity.cartItems.isNotEmpty
+                      ? const CustomDivider()
+                      : SizedBox(),
+            ),
           ],
         ),
         Positioned(
           left: 16,
           right: 16,
           bottom: MediaQuery.sizeOf(context).height * .07,
-          child: CustomButton(onPressed: () {}, text: 'الدفع  120جنيه'),
+          child: CustomCartButton(),
         ),
       ],
     );
