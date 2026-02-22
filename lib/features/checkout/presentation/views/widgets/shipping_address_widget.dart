@@ -19,7 +19,7 @@ class ShippingAddressWidget extends StatelessWidget {
           SvgPicture.asset(Assets.assetsImagesLocation),
           const SizedBox(width: 8),
           Text(
-            " ${context.read<OrderEntity>().shippingAddressEntity} ",
+            " ${context.read<OrderInputEntity>().shippingAddressEntity} ",
             textAlign: TextAlign.right,
             style: TextStyles.regular13.copyWith(
               color: const Color(0xFF4E5556),

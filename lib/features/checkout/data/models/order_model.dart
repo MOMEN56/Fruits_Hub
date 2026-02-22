@@ -3,27 +3,29 @@ import 'package:fruit_hub/features/checkout/data/models/order_product_model.dart
 import 'package:fruit_hub/features/checkout/data/models/shipping_Address_model.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
 import 'package:fruit_hub/generated/l10n.dart';
+import 'package:uuid/uuid.dart';
 
 class OrderModel {
   final double totalPrice;
-  final String uID;
+  final String uId;
   final ShippingAddressModel shippingAddressModel;
   final List<OrderProductModel> orderProducts;
   final String paymentMethod;
-
+  final String orderId;
   OrderModel({
     required this.totalPrice,
-    required this.uID,
+    required this.uId,
+    required this.orderId,
     required this.shippingAddressModel,
     required this.orderProducts,
     required this.paymentMethod,
   });
 
-  factory OrderModel.fromEntity(OrderEntity orderEntity) {
+  factory OrderModel.fromEntity(OrderInputEntity orderEntity) {
     return OrderModel(
-      totalPrice:
-          orderEntity.calculateTotalPriceAfterDiscountAndShipping(), // كامل
-      uID: orderEntity.uID,
+      orderId: const Uuid().v4(),
+      totalPrice: orderEntity.cartEntity.calculateTotalPrice(),
+      uId: orderEntity.uID,
       shippingAddressModel: ShippingAddressModel.fromEntity(
         orderEntity.shippingAddressEntity,
       ),
@@ -31,17 +33,19 @@ class OrderModel {
           orderEntity.cartEntity.cartItems
               .map((e) => OrderProductModel.fromEntity(cartItemEntity: e))
               .toList(),
-      paymentMethod:
-          (orderEntity.payWithCash == true) ? 'Cash' : 'Paypal', // شغال
+      paymentMethod: orderEntity.payWithCash! ? 'Cash' : 'Paypal',
     );
   }
   toJson() => {
+    'orderId': orderId,
     'totalPrice': totalPrice,
-    'uId': uID,
+    'uId': uId,
     'status': 'pending',
-    'dateTime': DateTime.now().toString(),
+    'date': DateTime.now().toString(),
     'shippingAddressModel': shippingAddressModel.toJson(),
     'orderProducts': orderProducts.map((e) => e.toJson()).toList(),
     'paymentMethod': paymentMethod,
   };
 }
+
+// payment method
