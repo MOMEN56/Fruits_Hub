@@ -23,14 +23,17 @@ class _ShippingSectionState extends State<ShippingSection>
         ShippingItem(
           onTap: () {
             selectedIndex = 0;
-            context.read<OrderEntity>().payWithCash = false;
+            context.read<OrderInputEntity>().payWithCash = false;
             setState(() {});
           },
           isSelected: selectedIndex == 0,
           title: 'الدفع عند الاستلام',
           subTitle: 'التسليم من المكان',
           price:
-              (context.read<OrderEntity>().cartEntity.calculateTotalPrice() +
+              (context
+                          .read<OrderInputEntity>()
+                          .cartEntity
+                          .calculateTotalPrice() +
                       30)
                   .toString(),
         ),
@@ -38,7 +41,7 @@ class _ShippingSectionState extends State<ShippingSection>
         ShippingItem(
           onTap: () {
             selectedIndex = 1;
-            context.read<OrderEntity>().payWithCash = true;
+            context.read<OrderInputEntity>().payWithCash = true;
             setState(() {});
           },
           isSelected: selectedIndex == 1,
@@ -46,7 +49,7 @@ class _ShippingSectionState extends State<ShippingSection>
           subTitle: 'يرجي تحديد طريقه الدفع',
           price:
               context
-                  .read<OrderEntity>()
+                  .read<OrderInputEntity>()
                   .cartEntity
                   .calculateTotalPrice()
                   .toString(),

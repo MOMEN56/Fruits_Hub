@@ -15,13 +15,17 @@ class UserModel extends UserEntity {
     return UserModel(
       name: map['name'] ?? '',
       email: map['email'] ?? '',
-      uId: map['uId'] ?? '',
+      uId: map['u_id'] ?? '', // ✅ كان 'uId' والصح 'u_id' زي ما هو في Supabase
     );
   }
   factory UserModel.fromEntity(UserEntity user) {
     return UserModel(name: user.name, email: user.email, uId: user.uId);
   }
   toMap() {
-    return {'name': name, 'email': email, 'uId': uId};
+    return {
+      'u_id': uId, // ✅ Firebase UID هنا
+      'name': name,
+      'email': email,
+    };
   }
 }

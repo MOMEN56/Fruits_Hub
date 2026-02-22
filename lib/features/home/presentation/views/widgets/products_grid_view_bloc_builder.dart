@@ -22,7 +22,7 @@ class ProductsGridViewBlocBuilder extends StatelessWidget {
         } else {
           return Skeletonizer.sliver(
             enabled: true,
-            child: ProductsGridView(products: getDummyProducts()),
+            child: ProductsGridView(products: []),
           );
         }
       },

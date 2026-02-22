@@ -1,6 +1,6 @@
+import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:fruit_hub/core/entities/product_entity.dart';
-import 'package:fruit_hub/core/helper_fun/get_dummy_product.dart';
 import 'package:fruit_hub/core/repos/products_repo/products_repo.dart';
 import 'package:meta/meta.dart';
 
@@ -11,29 +11,48 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   final ProductsRepo productsRepo;
   int productsLength = 0;
+
   Future<void> getProducts() async {
     emit(ProductsLoading());
-    await Future.delayed(
-      const Duration(seconds: 2),
-    ); // simulate loading زي السيرفر
-
-    // dummy data محلي (5 منتجات)
-    List<ProductEntity> dummyProducts =
-        getDummyProducts(); // الدالة اللي عندك جاهزة
-
-    emit(ProductsSuccess(dummyProducts));
+    try {
+      final result =
+          await productsRepo
+              .getProducts(); // call repo method (real from Supabase)
+      result.fold(
+        (failure) {
+          log('Get products failure: ${failure.message}');
+          emit(ProductsFailure(errMessage: failure.message));
+        },
+        (products) {
+          log('Get products success: ${products.length}');
+          emit(ProductsSuccess(products));
+        },
+      );
+    } catch (e) {
+      log('Get products error: $e');
+      emit(ProductsFailure(errMessage: e.toString()));
+    }
   }
 
   Future<void> getBestSellingProducts() async {
     emit(ProductsLoading());
-    await Future.delayed(const Duration(seconds: 2));
-
-    List<ProductEntity> dummyBestSelling =
-        getDummyProducts() // أو غيرها لو عايز تفرق
-            .take(10) // أول 10
-            .toList();
-
-    productsLength = dummyBestSelling.length;
-    emit(ProductsSuccess(dummyBestSelling));
+    try {
+      final result =
+          await productsRepo.getBestSellingProducts(); // real from Supabase
+      result.fold(
+        (failure) {
+          log('Get best selling failure: ${failure.message}');
+          emit(ProductsFailure(errMessage: failure.message));
+        },
+        (products) {
+          productsLength = products.length;
+          log('Get best selling success: ${products.length}');
+          emit(ProductsSuccess(products));
+        },
+      );
+    } catch (e) {
+      log('Get best selling error: $e');
+      emit(ProductsFailure(errMessage: e.toString()));
+    }
   }
 }

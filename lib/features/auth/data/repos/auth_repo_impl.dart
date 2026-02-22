@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/errors/exceptions.dart';
 import 'package:fruit_hub/core/errors/failures.dart';
-import 'package:fruit_hub/core/services/database_services.dart';
+import 'package:fruit_hub/core/services/data_service.dart';
 import 'package:fruit_hub/core/services/firebase_auth_service.dart';
 import 'package:fruit_hub/core/services/shared_preferences_singleton.dart';
 import 'package:fruit_hub/core/utils/backend_endpoints.dart';
@@ -17,7 +17,7 @@ import 'package:fruit_hub/features/auth/domain/repos/auth_repo.dart';
 
 class AuthRepoImpl extends AuthRepo {
   final FirebaseAuthService firebaseAuthService;
-  final DatabaseServices databaseServices;
+  final DatabaseService databaseServices;
 
   AuthRepoImpl({
     required this.databaseServices,
@@ -46,7 +46,7 @@ class AuthRepoImpl extends AuthRepo {
     } catch (e) {
       await deleteUser(user);
       log('Signup error: $e');
-      return left(ServerFailure('حدث خطأ ما'));
+      return left(ServerFailure('Something went wrong'));
     }
   }
 
@@ -68,7 +68,7 @@ class AuthRepoImpl extends AuthRepo {
       return left(ServerFailure(e.message));
     } catch (e) {
       log('Signin error: $e');
-      return left(ServerFailure('حدث خطأ ما'));
+      return left(ServerFailure('Something went wrong'));
     }
   }
 
@@ -84,7 +84,7 @@ class AuthRepoImpl extends AuthRepo {
     } catch (e) {
       await deleteUser(user);
       log('Google signin error: $e');
-      return left(ServerFailure('حدث خطأ ما'));
+      return left(ServerFailure('Something went wrong'));
     }
   }
 
@@ -100,27 +100,31 @@ class AuthRepoImpl extends AuthRepo {
     } catch (e) {
       await deleteUser(user);
       log('Facebook signin error: $e');
-      return left(ServerFailure('حدث خطأ ما'));
+      return left(ServerFailure('Something went wrong'));
     }
   }
 
   @override
   Future addUserData({required UserEntity user}) async {
     await databaseServices.addData(
-      path: BackendEndpoints.addUserData,
+      path: BackendEndpoint.addUserData,
       data: UserModel.fromEntity(user).toMap(),
-      documentId: user.uId,
     );
   }
 
   @override
   Future<UserEntity> getUserData({required String uid}) async {
-    final userData = await databaseServices.getUserData(
-      path: BackendEndpoints.getUserData,
-      docuementId: uid,
+    final userData = await databaseServices.getData(
+      path: BackendEndpoint.getUsersData,
+      query: {'u_id': uid},
     );
 
-    return UserModel.fromJson(userData);
+    final userMap = _extractFirstUserMap(userData);
+    if (userMap == null) {
+      throw CustomException(message: 'User data not found');
+    }
+
+    return UserModel.fromJson(userMap);
   }
 
   Future saveUserData({required UserEntity user}) async {
@@ -129,23 +133,32 @@ class AuthRepoImpl extends AuthRepo {
   }
 
   Future<UserEntity> _handleUserAfterAuth(User user) async {
-    final userData = await databaseServices.getUserData(
-      path: BackendEndpoints.getUserData,
-      docuementId: user.uid,
+    final userData = await databaseServices.getData(
+      path: BackendEndpoint.getUsersData,
+      query: {'u_id': user.uid},
     );
 
     late UserEntity userEntity;
+    final userMap = _extractFirstUserMap(userData);
 
-    if (userData == null) {
+    if (userMap == null) {
       userEntity = UserModel.fromFirebaseUser(user);
       await addUserData(user: userEntity);
     } else {
-      userEntity = UserModel.fromJson(userData);
+      userEntity = UserModel.fromJson(userMap);
     }
 
     await saveUserData(user: userEntity);
-
     return userEntity;
+  }
+
+  Map<String, dynamic>? _extractFirstUserMap(dynamic data) {
+    if (data == null) return null;
+    if (data is Map<String, dynamic>) return data;
+    if (data is List && data.isNotEmpty && data.first is Map<String, dynamic>) {
+      return data.first as Map<String, dynamic>;
+    }
+    return null;
   }
 
   Future<void> deleteUser(User? user) async {
