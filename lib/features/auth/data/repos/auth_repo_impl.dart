@@ -114,17 +114,17 @@ class AuthRepoImpl extends AuthRepo {
 
   @override
   Future<UserEntity> getUserData({required String uid}) async {
-    final userData = await databaseServices.getData(
+    final rawUserData = await databaseServices.getData(
       path: BackendEndpoint.getUsersData,
       query: {'u_id': uid},
     );
+    final userData = _extractUserMap(rawUserData);
 
-    final userMap = _extractFirstUserMap(userData);
-    if (userMap == null) {
+    if (userData == null) {
       throw CustomException(message: 'User data not found');
     }
 
-    return UserModel.fromJson(userMap);
+    return UserModel.fromJson(userData);
   }
 
   Future saveUserData({required UserEntity user}) async {
@@ -133,32 +133,54 @@ class AuthRepoImpl extends AuthRepo {
   }
 
   Future<UserEntity> _handleUserAfterAuth(User user) async {
-    final userData = await databaseServices.getData(
+    final rawUserData = await databaseServices.getData(
       path: BackendEndpoint.getUsersData,
       query: {'u_id': user.uid},
     );
+    final userData = _extractUserMap(rawUserData);
 
     late UserEntity userEntity;
-    final userMap = _extractFirstUserMap(userData);
 
-    if (userMap == null) {
+    if (userData == null) {
       userEntity = UserModel.fromFirebaseUser(user);
       await addUserData(user: userEntity);
     } else {
-      userEntity = UserModel.fromJson(userMap);
+      userEntity = UserModel.fromJson(userData);
     }
 
     await saveUserData(user: userEntity);
     return userEntity;
   }
 
-  Map<String, dynamic>? _extractFirstUserMap(dynamic data) {
-    if (data == null) return null;
-    if (data is Map<String, dynamic>) return data;
-    if (data is List && data.isNotEmpty && data.first is Map<String, dynamic>) {
-      return data.first as Map<String, dynamic>;
+  Map<String, dynamic>? _extractUserMap(dynamic rawUserData) {
+    if (rawUserData == null) {
+      return null;
     }
-    return null;
+
+    if (rawUserData is Map<String, dynamic>) {
+      return rawUserData;
+    }
+
+    if (rawUserData is Map) {
+      return Map<String, dynamic>.from(rawUserData);
+    }
+
+    if (rawUserData is List) {
+      if (rawUserData.isEmpty) {
+        return null;
+      }
+
+      final firstItem = rawUserData.first;
+      if (firstItem is Map<String, dynamic>) {
+        return firstItem;
+      }
+
+      if (firstItem is Map) {
+        return Map<String, dynamic>.from(firstItem);
+      }
+    }
+
+    throw CustomException(message: 'Unsupported user data format');
   }
 
   Future<void> deleteUser(User? user) async {
@@ -167,3 +189,4 @@ class AuthRepoImpl extends AuthRepo {
     }
   }
 }
+

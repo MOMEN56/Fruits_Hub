@@ -24,7 +24,7 @@ class OnBoardingPageViewItem extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.of(context).size.height * 0.48,
           width: double.infinity,
           child: Stack(
             children: [
@@ -62,7 +62,7 @@ class OnBoardingPageViewItem extends StatelessWidget {
 
         // العنوان
         title,
-        const SizedBox(height: 64),
+        const SizedBox(height: 55),
 
         // الـ subtitle مع padding أكبر
         Padding(
@@ -77,7 +77,7 @@ class OnBoardingPageViewItem extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 24), // مسافة بعد الـ subtitle
+        //const SizedBox(height: 24), // مسافة بعد الـ subtitle
       ],
     );
   }
