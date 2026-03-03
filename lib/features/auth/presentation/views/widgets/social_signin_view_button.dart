@@ -34,7 +34,7 @@ class SocialSigninViewButton extends StatelessWidget {
           title: Text(
             title,
             textAlign: TextAlign.center,
-            style: TextStyles.semiBold16,
+            style: TextStyles.bold13,
           ),
         ),
       ),

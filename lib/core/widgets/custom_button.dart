@@ -4,14 +4,22 @@ import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton({super.key, required this.onPressed, required this.text});
+  const CustomButton({
+    super.key,
+    required this.onPressed,
+    required this.text,
+    this.width,
+    this.height,
+  });
   final VoidCallback onPressed;
   final String text;
+  final double? width;
+  final double? height;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
-      height: 54,
+      width: width ?? double.infinity,
+      height: height ?? 54,
       child: TextButton(
         style: TextButton.styleFrom(
           shape: RoundedRectangleBorder(

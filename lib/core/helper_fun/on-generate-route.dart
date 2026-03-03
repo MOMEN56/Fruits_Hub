@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/features/auth/presentation/views/signin_view.dart';
 import 'package:fruit_hub/features/auth/presentation/views/sign_up_view.dart';
 import 'package:fruit_hub/features/best_selling/presentation/view/best_selling_view.dart';
@@ -7,6 +7,7 @@ import 'package:fruit_hub/features/checkout/presentation/views/checkout_view.dar
 import 'package:fruit_hub/features/home/domain/entites/cart_entity.dart';
 import 'package:fruit_hub/features/home/presentation/views/main_view.dart';
 import 'package:fruit_hub/features/on_boarding/presentation/views/on_boarding_view.dart';
+import 'package:fruit_hub/features/product_details/presentation/views/product_details_view.dart';
 import 'package:fruit_hub/features/splash/presentation/views/splash_view.dart';
 
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -15,6 +16,15 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (_) => const SplashView());
     case SigninView.routeName:
       return MaterialPageRoute(builder: (_) => const SigninView());
+    case ProductDetailsView.routeName:
+      final args = settings.arguments as ProductDetailsArgs;
+      return MaterialPageRoute(
+        builder:
+            (_) => BlocProvider.value(
+              value: args.cartCubit,
+              child: ProductDetailsView(productEntity: args.productEntity),
+            ),
+      );
     case BestSellingView.routeName:
       return MaterialPageRoute(builder: (_) => const BestSellingView());
     case OnBoardingView.routeName:

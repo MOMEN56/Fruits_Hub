@@ -35,16 +35,14 @@ class SupabaseService implements DatabaseService {
     if (docuementId != null) {
       final data =
           await supabase.from(path).select().eq('id', docuementId).single();
-      return data;
+      return data; // Map
     }
 
     dynamic request = supabase.from(path).select();
 
     if (query != null && query.isNotEmpty) {
       query.forEach((key, value) {
-        if (key == 'orderBy' || key == 'descending' || key == 'limit') {
-          return;
-        }
+        if (key == 'orderBy' || key == 'descending' || key == 'limit') return;
         request = request.eq(key, value);
       });
 
@@ -61,6 +59,13 @@ class SupabaseService implements DatabaseService {
     }
 
     final result = await request;
+
+    // لو جايب أكتر من عنصر، رجع List
+    if (result is List) {
+      return result;
+    }
+
+    // لو Map (مثلاً select.single)، رجعه Map
     return result;
   }
 

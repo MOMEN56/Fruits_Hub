@@ -4,10 +4,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
 import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
+import 'package:fruit_hub/core/utils/widgets/quantity_selector.dart';
 import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_item_cubit/cubit/cart_item_cubit.dart';
-import 'package:fruit_hub/features/home/presentation/views/widgets/cart_item_action_buttons.dart';
 import '../../../../../core/utils/app_text_styles.dart';
 
 class CartItem extends StatelessWidget {
@@ -61,7 +61,7 @@ class CartItem extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      '${carItemEntity.calculateTotalWeight()} كم',
+                      '${carItemEntity.calculateTotalWeight()} جم',
                       textAlign: TextAlign.right,
                       style: TextStyles.regular13.copyWith(
                         color: AppColors.secondaryColor,
@@ -69,7 +69,7 @@ class CartItem extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        CartItemActionButtons(cartItemEntity: carItemEntity),
+                        QuantitySelector(cartItemEntity: carItemEntity),
                         const Spacer(),
                         Text(
                           '${carItemEntity.calculateTotalPrice()} جنيه ',

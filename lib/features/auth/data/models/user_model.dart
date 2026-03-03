@@ -13,9 +13,9 @@ class UserModel extends UserEntity {
   }
   factory UserModel.fromJson(Map<String, dynamic> map) {
     return UserModel(
-      name: map['name'] ?? '',
-      email: map['email'] ?? '',
-      uId: map['u_id'] ?? '', // ✅ كان 'uId' والصح 'u_id' زي ما هو في Supabase
+      name: map['name'] as String? ?? '',
+      email: map['email'] as String? ?? '',
+      uId: map['u_id'] as String? ?? '',
     );
   }
   factory UserModel.fromEntity(UserEntity user) {
