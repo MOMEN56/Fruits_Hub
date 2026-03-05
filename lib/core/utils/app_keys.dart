@@ -1,5 +1,0 @@
-const KPaymobApiKey =
-    'ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TVRFek5qSTFNeXdpYm1GdFpTSTZJbWx1YVhScFlXd2lmUS5TUWEwQWV5bTIxQkpPOEg3cHV2RlBlNjlSRjFtTTIwd3NSTFY3Y3Iyemd2dHdtZFhGR2NmeXpjYlRWTWg3MUdSV0J4SWtJVTk5WU94LWIxTXdocEtMZw==';
-const KPaymobIframeId = '1011011';
-const KPaymobIntegrationCardId = '5561406';
-const KPaymobIntegrationMobileWalletId = '5564144';
