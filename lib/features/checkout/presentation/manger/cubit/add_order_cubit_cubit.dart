@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fruit_hub/core/repos/order_repo/order_repo.dart';
@@ -13,7 +15,10 @@ class AddOrderCubit extends Cubit<AddOrderState> {
     emit(AddOrderLoading());
     final result = await orderRepo.addOrder(order: order);
     result.fold(
-      (failure) => emit(AddOrderFailure(errorMessage: failure.message)),
+      (failure) {
+        log('AddOrder failed: ${failure.message}');
+        emit(AddOrderFailure(errorMessage: failure.message));
+      },
       (_) => emit(AddOrderSuccess()),
     );
   }

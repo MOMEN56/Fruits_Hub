@@ -7,9 +7,11 @@ import 'package:fruit_hub/core/services/custom_bloc_observer.dart';
 import 'package:fruit_hub/core/services/git_it_services.dart';
 import 'package:fruit_hub/core/services/subabase_services.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
+import 'package:fruit_hub/core/utils/app_keys.dart';
 import 'package:fruit_hub/features/splash/presentation/views/splash_view.dart';
 import 'package:fruit_hub/generated/l10n.dart';
 import 'package:fruit_hub/core/services/shared_preferences_singleton.dart';
+import 'package:pay_with_paymob/pay_with_paymob.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -19,6 +21,12 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Prefs.init();
+  PaymentData.initialize(
+    apiKey: KPaymobApiKey,
+    iframeId: KPaymobIframeId,
+    integrationCardId: KPaymobIntegrationCardId,
+    integrationMobileWalletId: KPaymobIntegrationMobileWalletId,
+  );
   setupGitIt();
   runApp(const FruitHub());
 }

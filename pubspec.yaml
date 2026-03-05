@@ -51,7 +51,8 @@ dependencies:
   skeletonizer: ^1.4.3
   equatable: ^2.0.8
   provider: ^6.1.5+1
-  flutter_paypal_payment: ^1.0.8
+  pay_with_paymob:
+    path: packages/pay_with_paymob
   uuid: ^4.5.2
   supabase_flutter: ^2.8.0
 
