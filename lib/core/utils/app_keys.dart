@@ -1,4 +1,5 @@
-const KPaypalSecretKey =
-    "EBP2ZB7zjlYBS4cPDVAeZcDo5bzLBWYmu0kfj1pJnGuUGCPyMNO_28-271M44xxT1RoFNLqaizkCI-QJ";
-const KPaypalClientId =
-    "ARJwMkcBTsf0LgtqdoJqZeWjoX5yt1VlbBxh2kyKLhaK8-ncARTe2vB9boWrF9uMgw8V_MzjClu9rTbz";
+const KPaymobApiKey =
+    'ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TVRFek5qSTFNeXdpYm1GdFpTSTZJbWx1YVhScFlXd2lmUS5TUWEwQWV5bTIxQkpPOEg3cHV2RlBlNjlSRjFtTTIwd3NSTFY3Y3Iyemd2dHdtZFhGR2NmeXpjYlRWTWg3MUdSV0J4SWtJVTk5WU94LWIxTXdocEtMZw==';
+const KPaymobIframeId = '1011011';
+const KPaymobIntegrationCardId = '5561406';
+const KPaymobIntegrationMobileWalletId = '5564144';

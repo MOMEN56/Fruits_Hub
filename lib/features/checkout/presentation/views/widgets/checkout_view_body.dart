@@ -1,25 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
-import 'package:fruit_hub/core/helper_fun/get_user.dart';
-import 'package:fruit_hub/core/repos/order_repo/order_repo.dart';
-import 'package:fruit_hub/core/services/git_it_services.dart';
-import 'package:fruit_hub/core/utils/app_keys.dart';
-import 'package:fruit_hub/core/widgets/custom_app_bar.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
-import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/paypal_payment_entity/paypal_payment_entity.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/shipping_address_entity.dart';
 import 'package:fruit_hub/features/checkout/presentation/manger/cubit/add_order_cubit_cubit.dart';
-import 'package:fruit_hub/features/checkout/presentation/views/widgets/add_order_cubit_bloc_builder.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_steps.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_steps_page_view.dart';
-import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_view_body.dart';
-import 'package:fruit_hub/features/home/domain/entites/cart_entity.dart';
+import 'package:pay_with_paymob/pay_with_paymob.dart';
 import 'package:provider/provider.dart';
 
 class CheckoutViewBody extends StatefulWidget {
@@ -31,9 +18,12 @@ class CheckoutViewBody extends StatefulWidget {
 
 class _CheckoutViewBodyState extends State<CheckoutViewBody> {
   late PageController pageController;
-  ValueNotifier<AutovalidateMode> valueNotifier = ValueNotifier(
+  final ValueNotifier<AutovalidateMode> valueNotifier = ValueNotifier(
     AutovalidateMode.disabled,
   );
+  int currentPageIndex = 0;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     pageController = PageController();
@@ -52,8 +42,6 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
     super.dispose();
   }
 
-  int currentPageIndex = 0;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -64,16 +52,14 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
           CheckoutSteps(
             onTap: (index) {
               if (index < currentPageIndex) {
-                // رجوع حر
                 pageController.animateToPage(
                   index,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                 );
               } else if (index == currentPageIndex) {
-                return; // مفيش حاجة
+                return;
               } else {
-                // تقدم
                 if (currentPageIndex == 0) {
                   if (context.read<OrderInputEntity>().payWithCash != null) {
                     pageController.nextPage(
@@ -81,10 +67,10 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
                       curve: Curves.easeInOut,
                     );
                   } else {
-                    buildSnackBar(context, 'يرجي تحديد طريقه الدفع');
+                    buildSnackBar(context, 'يرجى تحديد طريقة الدفع');
                   }
                 } else if (currentPageIndex == 1) {
-                  _handleAddressValidation(); // داخلها nextPage لو valid
+                  _handleAddressValidation();
                 }
               }
             },
@@ -124,18 +110,20 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
         curve: Curves.bounceIn,
       );
     } else {
-      buildSnackBar(context, 'يرجي تحديد طريقه الدفع');
+      buildSnackBar(context, 'يرجى تحديد طريقة الدفع');
     }
   }
 
   String getNextButtonText(int currentPageIndex) {
+    final orderEntity = context.read<OrderInputEntity>();
     switch (currentPageIndex) {
       case 0:
-        return 'التالي';
       case 1:
         return 'التالي';
       case 2:
-        return 'الدفع عبر PayPal';
+        return orderEntity.payWithCash == true
+            ? 'تأكيد الطلب'
+            : 'الدفع عبر Paymob';
       default:
         return 'التالي';
     }
@@ -155,32 +143,25 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
   }
 
   void _processPayment(BuildContext context) {
-    var orderEntity = context.read<OrderInputEntity>();
-    PaypalPaymentEntity paypalPaymentEntity = PaypalPaymentEntity.fromEntity(
-      orderEntity,
-    );
-    var addOrderCubit = context.read<AddOrderCubit>();
+    final orderEntity = context.read<OrderInputEntity>();
+    final addOrderCubit = context.read<AddOrderCubit>();
+    if (orderEntity.payWithCash == true) {
+      addOrderCubit.addOrder(order: orderEntity);
+      return;
+    }
 
     Navigator.of(context).push(
       MaterialPageRoute(
         builder:
-            (BuildContext context) => PaypalCheckoutView(
-              sandboxMode: true,
-              clientId: KPaypalClientId,
-              secretKey: KPaypalSecretKey,
-              transactions: [paypalPaymentEntity.toJson()],
-              note: "Contact us for any questions on your order.",
-              onSuccess: (Map params) async {
-                Navigator.pop(context);
+            (BuildContext context) => PaymentView(
+              price: orderEntity.calculateTotalPriceAfterDiscountAndShipping(),
+              onPaymentSuccess: () {
+                Navigator.of(context).pop();
                 addOrderCubit.addOrder(order: orderEntity);
               },
-              onError: (error) {
-                Navigator.pop(context);
-                log(error.toString());
-                buildSnackBar(context, 'حدث خطأ في عملية الدفع');
-              },
-              onCancel: () {
-                print('cancelled:');
+              onPaymentError: () {
+                Navigator.of(context).pop();
+                buildSnackBar(context, 'حدث خطأ في عملية الدفع');
               },
             ),
       ),

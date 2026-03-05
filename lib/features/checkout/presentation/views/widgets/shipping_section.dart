@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/shipping_item.dart';
-import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
 
 class ShippingSection extends StatefulWidget {
   const ShippingSection({super.key});
@@ -23,7 +22,7 @@ class _ShippingSectionState extends State<ShippingSection>
         ShippingItem(
           onTap: () {
             selectedIndex = 0;
-            context.read<OrderInputEntity>().payWithCash = false;
+            context.read<OrderInputEntity>().payWithCash = true;
             setState(() {});
           },
           isSelected: selectedIndex == 0,
@@ -41,7 +40,7 @@ class _ShippingSectionState extends State<ShippingSection>
         ShippingItem(
           onTap: () {
             selectedIndex = 1;
-            context.read<OrderInputEntity>().payWithCash = true;
+            context.read<OrderInputEntity>().payWithCash = false;
             setState(() {});
           },
           isSelected: selectedIndex == 1,

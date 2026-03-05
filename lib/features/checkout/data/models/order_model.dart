@@ -1,8 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:fruit_hub/features/checkout/data/models/order_product_model.dart';
 import 'package:fruit_hub/features/checkout/data/models/shipping_Address_model.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
-import 'package:fruit_hub/generated/l10n.dart';
 import 'package:uuid/uuid.dart';
 
 class OrderModel {
@@ -33,18 +31,18 @@ class OrderModel {
           orderEntity.cartEntity.cartItems
               .map((e) => OrderProductModel.fromEntity(cartItemEntity: e))
               .toList(),
-      paymentMethod: orderEntity.payWithCash! ? 'Cash' : 'Paypal',
+      paymentMethod: orderEntity.payWithCash! ? 'Cash' : 'Paymob',
     );
   }
   toJson() => {
-    'orderId': orderId,
-    'totalPrice': totalPrice,
-    'uId': uId,
+    'order_id': orderId,
+    'total_price': totalPrice,
+    'u_id': uId,
     'status': 'pending',
-    'date': DateTime.now().toString(),
-    'shippingAddressModel': shippingAddressModel.toJson(),
-    'orderProducts': orderProducts.map((e) => e.toJson()).toList(),
-    'paymentMethod': paymentMethod,
+    'created_at': DateTime.now().toIso8601String(),
+    'shipping_address': shippingAddressModel.toJson(),
+    'order_products': orderProducts.map((e) => e.toJson()).toList(),
+    'payment_method': paymentMethod,
   };
 }
 
