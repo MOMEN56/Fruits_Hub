@@ -10,6 +10,21 @@ part 'add_order_cubit_state.dart';
 class AddOrderCubit extends Cubit<AddOrderState> {
   AddOrderCubit(this.orderRepo) : super(AddOrderInitial());
   final OrderRepo orderRepo;
+  int _paymentRequestCounter = 0;
+
+  void submitOrder({required OrderInputEntity order}) {
+    if (order.payWithCash == true) {
+      addOrder(order: order);
+      return;
+    }
+
+    emit(
+      AddOrderNeedsOnlinePayment(
+        order: order,
+        requestId: ++_paymentRequestCounter,
+      ),
+    );
+  }
 
   void addOrder({required OrderInputEntity order}) async {
     emit(AddOrderLoading());

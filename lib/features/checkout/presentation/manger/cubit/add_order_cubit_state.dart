@@ -11,6 +11,19 @@ final class AddOrderInitial extends AddOrderState {}
 
 final class AddOrderLoading extends AddOrderState {}
 
+final class AddOrderNeedsOnlinePayment extends AddOrderState {
+  final OrderInputEntity order;
+  final int requestId;
+
+  const AddOrderNeedsOnlinePayment({
+    required this.order,
+    required this.requestId,
+  });
+
+  @override
+  List<Object> get props => [requestId];
+}
+
 final class AddOrderSuccess extends AddOrderState {}
 
 final class AddOrderFailure extends AddOrderState {

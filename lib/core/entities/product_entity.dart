@@ -7,6 +7,7 @@ class ProductEntity {
   final String code;
   final String description;
   final num price;
+  final int sellingCount;
 
   final bool isFeatured;
   String? imageUrl;
@@ -22,6 +23,7 @@ class ProductEntity {
     required this.code,
     required this.description,
     required this.price,
+    this.sellingCount = 0,
     required this.reviews,
     required this.expirationsMonths,
     required this.numberOfCalories,

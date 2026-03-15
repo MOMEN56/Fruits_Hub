@@ -47,13 +47,17 @@ class QuantitySelector extends StatelessWidget {
           color: AppColors.primaryColor,
           size: buttonSize,
           padding: buttonPadding,
-          onPressed: () {
+          onPressed: () async {
             if (_isControlled) {
               onIncrement!();
               return;
             }
-            cartItemEntity!.increasquantity();
-            context.read<CartItemCubit>().updateCartItem(cartItemEntity!);
+            final cartCubit = context.read<CartCubit>();
+            final cartItemCubit = context.read<CartItemCubit>();
+            await cartCubit.increaseProductQuantity(
+              cartItemEntity!.productEntity,
+            );
+            cartItemCubit.updateCartItem(cartItemEntity!);
           },
         ),
         Padding(
@@ -70,15 +74,17 @@ class QuantitySelector extends StatelessWidget {
           color: const Color(0xFFF3F5F7),
           size: buttonSize,
           padding: buttonPadding,
-          onPressed: () {
+          onPressed: () async {
             if (_isControlled) {
               onDecrement!();
               return;
             }
-            context.read<CartCubit>().decreaseProductQuantity(
+            final cartCubit = context.read<CartCubit>();
+            final cartItemCubit = context.read<CartItemCubit>();
+            await cartCubit.decreaseProductQuantity(
               cartItemEntity!.productEntity,
             );
-            context.read<CartItemCubit>().updateCartItem(cartItemEntity!);
+            cartItemCubit.updateCartItem(cartItemEntity!);
           },
         ),
       ],

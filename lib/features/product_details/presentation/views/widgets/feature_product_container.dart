@@ -1,9 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:fruit_hub/core/utils/app_text_styles.dart';
-import 'package:fruit_hub/core/utils/assets.dart';
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 class FeatureProductContainer extends StatelessWidget {
   const FeatureProductContainer({
@@ -12,64 +7,69 @@ class FeatureProductContainer extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     this.borderColor = const Color(0xFFF1F1F5),
+    this.width,
+    this.height = 80,
   });
 
   final String title;
   final String subtitle;
   final Widget icon;
   final Color borderColor;
+  final double? width;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 155,
-      height: 80,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
-        color: Colors.transparent, // خلفية شفافة
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: borderColor, // لون الإطار
-          width: 1,
-        ),
+        border: Border.all(color: borderColor, width: 1),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // النصوص
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                title,
-                textAlign: TextAlign.right,
-                style: const TextStyle(
-                  color: Color(0xFF23AA49),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Cairo',
-                ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: const Color(0xFF23AA49),
+                      fontSize: title.length > 8 ? 13 : 16,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(
+                      color: Color(0xFF969899),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Cairo',
+                      height: 1.7,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                textAlign: TextAlign.right,
-                style: const TextStyle(
-                  color: Color(0xFF969899),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Cairo',
-                  height: 1.7,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(width: 16),
-
-          // الأيقونة / الصورة
-          SizedBox(height: 36, width: 36, child: icon),
-        ],
+            ),
+            const SizedBox(width: 12),
+            SizedBox(height: 36, width: 36, child: icon),
+          ],
+        ),
       ),
     );
   }

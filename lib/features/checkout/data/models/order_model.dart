@@ -31,7 +31,7 @@ class OrderModel {
           orderEntity.cartEntity.cartItems
               .map((e) => OrderProductModel.fromEntity(cartItemEntity: e))
               .toList(),
-      paymentMethod: orderEntity.payWithCash! ? 'Cash' : 'Paymob',
+      paymentMethod: orderEntity.payWithCash! ? 'كاش' : 'اونلاين',
     );
   }
   toJson() => {

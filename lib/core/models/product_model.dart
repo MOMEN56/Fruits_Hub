@@ -65,6 +65,7 @@ class ProductModel {
       code: code ?? '',
       description: description ?? '',
       price: price ?? 0,
+      sellingCount: sellingCount ?? 0,
       reviews: reviews?.map((e) => e.toEntity()).toList() ?? [], // null-safe
       expirationsMonths: expirationsMonths ?? 0,
       numberOfCalories: numberOfCalories ?? 0,
@@ -81,6 +82,7 @@ class ProductModel {
       'code': code,
       'description': description,
       'price': price,
+      'selling_count': sellingCount,
       'is_featured': isFeatured,
       'image_url': imageUrl,
       'expirations_months': expirationsMonths,

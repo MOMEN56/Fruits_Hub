@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
+import 'package:fruit_hub/core/services/git_it_services.dart';
+import 'package:fruit_hub/core/services/push_notification_service.dart';
 import 'package:fruit_hub/core/widgets/custom_progress_hud.dart';
 import 'package:fruit_hub/features/auth/presentation/cubits/signin_cubit/cubit/signin_cubit.dart';
 import 'package:fruit_hub/features/auth/presentation/views/widgets/signin_view_body.dart';
@@ -14,6 +18,9 @@ class SinginViewBodyBlocConsumer extends StatelessWidget {
     return BlocConsumer<SigninCubit, SigninState>(
       listener: (context, state) {
         if (state is SigninSuccess) {
+          unawaited(
+            getIt<PushNotificationService>().registerCurrentUserDeviceAfterLogin(),
+          );
           Navigator.popAndPushNamed(context, MainView.routeName);
         }
         if (state is SigninFailure) {

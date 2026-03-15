@@ -10,3 +10,7 @@ final class CartItemAdded extends CartState {}
 final class CartItemReset extends CartState {}
 
 final class CartItemRemoved extends CartState {}
+
+final class CartHydrated extends CartState {}
+
+final class CartCleared extends CartState {}

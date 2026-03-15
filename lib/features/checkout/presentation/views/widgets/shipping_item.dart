@@ -11,9 +11,13 @@ class ShippingItem extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
   });
-  final String title, subTitle, price;
+
+  final String title;
+  final String subTitle;
+  final String price;
   final bool isSelected;
   final VoidCallback onTap;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -23,7 +27,7 @@ class ShippingItem extends StatelessWidget {
         padding: const EdgeInsets.only(
           top: 16,
           left: 13,
-          right: 28,
+          right: 20,
           bottom: 16,
         ),
         clipBehavior: Clip.antiAlias,
@@ -44,26 +48,40 @@ class ShippingItem extends StatelessWidget {
                   ? const ActiveShippingItemDot()
                   : const InActiveShippingItemDot(),
               const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: TextStyles.semiBold13),
-                  const SizedBox(height: 6),
-                  Text(
-                    subTitle,
-                    textAlign: TextAlign.right,
-                    style: TextStyles.regular13.copyWith(
-                      color: Colors.black.withOpacity(.5),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyles.semiBold13,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 6),
+                    Text(
+                      subTitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.right,
+                      style: TextStyles.regular13.copyWith(
+                        color: Colors.black.withOpacity(.5),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const Spacer(),
-              Center(
-                child: Text(
-                  '$price جنيه',
-                  style: TextStyles.bold13.copyWith(
-                    color: AppColors.lightPrimaryColor,
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 92,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    '$price جنيه',
+                    style: TextStyles.bold13.copyWith(
+                      color: AppColors.lightPrimaryColor,
+                    ),
                   ),
                 ),
               ),
@@ -84,7 +102,9 @@ class InActiveShippingItemDot extends StatelessWidget {
       width: 18,
       height: 18,
       decoration: const ShapeDecoration(
-        shape: OvalBorder(side: BorderSide(width: 1, color: Color(0xFF949D9E))),
+        shape: OvalBorder(
+          side: BorderSide(width: 1, color: Color(0xFF949D9E)),
+        ),
       ),
     );
   }

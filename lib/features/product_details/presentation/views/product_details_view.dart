@@ -19,6 +19,6 @@ class ProductDetailsView extends StatelessWidget {
   static const String routeName = 'product_details';
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: ProductDetailsViewBody(productEntity: productEntity));
+    return ProductDetailsViewBody(productEntity: productEntity);
   }
 }

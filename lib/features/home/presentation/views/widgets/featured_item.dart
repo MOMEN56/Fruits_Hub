@@ -1,5 +1,8 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart' as svg;
@@ -10,7 +13,12 @@ class FeaturedItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var itemWidth = MediaQuery.sizeOf(context).width - 32;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
+    final itemWidth = math.min(
+      screenWidth - (horizontalPadding * 2),
+      520.0,
+    ).toDouble();
     return ClipRRect(
       borderRadius: BorderRadius.circular(4),
       child: SizedBox(

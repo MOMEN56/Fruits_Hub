@@ -2,20 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
+import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
 import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
 import 'package:fruit_hub/core/utils/widgets/quantity_selector.dart';
 import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_item_cubit/cubit/cart_item_cubit.dart';
-import '../../../../../core/utils/app_text_styles.dart';
 
 class CartItem extends StatelessWidget {
   const CartItem({super.key, required this.carItemEntity});
 
   final CarItemEntity carItemEntity;
+
   @override
   Widget build(BuildContext context) {
+    final quantityScale = MediaQuery.sizeOf(context).width < 380 ? 0.9 : 1.0;
+
     return BlocBuilder<CartItemCubit, CartItemState>(
       buildWhen: (previous, current) {
         if (current is CartItemUpdated) {
@@ -43,20 +46,22 @@ class CartItem extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          carItemEntity.productEntity.name,
-                          style: TextStyles.bold13,
+                        Expanded(
+                          child: Text(
+                            carItemEntity.productEntity.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyles.bold13,
+                          ),
                         ),
-                        const Spacer(),
+                        const SizedBox(width: 8),
                         GestureDetector(
-                          onTap: () {
-                            context.read<CartCubit>().deleteProduct(
+                          onTap: () async {
+                            await context.read<CartCubit>().deleteProduct(
                               carItemEntity,
                             );
                           },
-                          child: SvgPicture.asset(
-                            Assets.assetsImagesTrashimage,
-                          ),
+                          child: SvgPicture.asset(Assets.assetsImagesTrashimage),
                         ),
                       ],
                     ),
@@ -69,12 +74,24 @@ class CartItem extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        QuantitySelector(cartItemEntity: carItemEntity),
-                        const Spacer(),
-                        Text(
-                          '${carItemEntity.calculateTotalPrice()} جنيه ',
-                          style: TextStyles.bold16.copyWith(
-                            color: AppColors.secondaryColor,
+                        QuantitySelector(
+                          cartItemEntity: carItemEntity,
+                          scale: quantityScale,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                '${carItemEntity.calculateTotalPrice().toStringAsFixed(0)} جنيه',
+                                style: TextStyles.bold16.copyWith(
+                                  color: AppColors.secondaryColor,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],

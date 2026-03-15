@@ -21,64 +21,83 @@ class OnBoardingPageViewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.48,
-          width: double.infinity,
-          child: Stack(
-            children: [
-              // الخلفية
-              Positioned.fill(
-                child: SvgPicture.asset(backgroundimage, fit: BoxFit.fill),
-              ),
-              // الصورة الرئيسية (محاذاة Bottom)
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: SvgPicture.asset(image),
-              ),
-              // زر "تخط"
-              Visibility(
-                visible: isVisible,
-                child: GestureDetector(
-                  onTap: () {
-                    Prefs.setBool('KisOnBoardingViewSeen', true);
-                    Navigator.of(context).popAndPushNamed(SigninView.routeName);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      'تخط',
-                      style: TextStyle(color: Color(0xFF949D9E), fontSize: 13),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final imageHeight =
+            (constraints.maxHeight * 0.56).clamp(260.0, 460.0).toDouble();
+        final subtitleHorizontalPadding =
+            (constraints.maxWidth * 0.14).clamp(24.0, 72.0).toDouble();
+
+        return SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: imageHeight,
+                  width: double.infinity,
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: SvgPicture.asset(backgroundimage, fit: BoxFit.fill),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: SvgPicture.asset(image, fit: BoxFit.contain),
+                      ),
+                      if (isVisible)
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              Prefs.setBool('KisOnBoardingViewSeen', true);
+                              Navigator.of(
+                                context,
+                              ).popAndPushNamed(SigninView.routeName);
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Text(
+                                'تخط',
+                                style: TextStyle(
+                                  color: Color(0xFF949D9E),
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                title,
+                const SizedBox(height: 24),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: subtitleHorizontalPadding,
+                  ),
+                  child: Text(
+                    subtitle,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Color(0xFF4E5456),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-
-        // العنوان
-        title,
-        const SizedBox(height: 55),
-
-        // الـ subtitle مع padding أكبر
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 37),
-          child: Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color(0xFF4E5456),
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+                const SizedBox(height: 12),
+              ],
             ),
           ),
-        ),
-        //const SizedBox(height: 24), // مسافة بعد الـ subtitle
-      ],
+        );
+      },
     );
   }
 }

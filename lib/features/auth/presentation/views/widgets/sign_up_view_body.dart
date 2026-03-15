@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
+import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
 import 'package:fruit_hub/core/widgets/custom_password_field.dart';
 import 'package:fruit_hub/core/widgets/custom_text_field.dart';
@@ -21,81 +21,89 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
   AutovalidateMode autoValidateMode = AutovalidateMode.disabled;
   late String email, userName, password;
   late bool isTermsAccepted = false;
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: kHorizintalPadding),
-        child: Form(
-          key: formkey,
-          autovalidateMode: autoValidateMode,
-          child: Column(
-            children: [
-              SizedBox(height: 24),
-              CustomTextFormField(
-                onSaved: (value) {
-                  userName = value!;
-                },
-                hintText: 'الاسم كامل',
-                textInputType: TextInputType.name,
-              ),
-              const SizedBox(height: 16),
-              CustomTextFormField(
-                onSaved: (value) {
-                  email = value!;
-                },
+    final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
 
-                hintText: 'البريد الإلكتروني',
-                textInputType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 16),
-              CustomPasswordField(
-                onSaved: (value) {
-                  password = value!;
-                },
-              ),
-              const SizedBox(height: 16),
-              TermsAndConditionsWidget(
-                onChecked: (value) {
-                  isTermsAccepted = value;
-                },
-              ),
-              const SizedBox(height: 30),
-              CustomButton(
-                onPressed: () {
-                  if (formkey.currentState!.validate()) {
-                    formkey.currentState!.save();
-                    if (isTermsAccepted)
-                      context
-                          .read<SignupCubit>()
-                          .createUserWithEmailAndPassword(
-                            email,
-                            password,
-                            userName,
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            child: Form(
+              key: formkey,
+              autovalidateMode: autoValidateMode,
+              child: Column(
+                children: [
+                  const SizedBox(height: 24),
+                  CustomTextFormField(
+                    onSaved: (value) {
+                      userName = value!;
+                    },
+                    hintText: 'الاسم كامل',
+                    textInputType: TextInputType.name,
+                  ),
+                  const SizedBox(height: 16),
+                  CustomTextFormField(
+                    onSaved: (value) {
+                      email = value!;
+                    },
+                    hintText: 'البريد الإلكتروني',
+                    textInputType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 16),
+                  CustomPasswordField(
+                    onSaved: (value) {
+                      password = value!;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TermsAndConditionsWidget(
+                    onChecked: (value) {
+                      isTermsAccepted = value;
+                    },
+                  ),
+                  const SizedBox(height: 30),
+                  CustomButton(
+                    onPressed: () {
+                      if (formkey.currentState!.validate()) {
+                        formkey.currentState!.save();
+                        if (isTermsAccepted) {
+                          context
+                              .read<SignupCubit>()
+                              .createUserWithEmailAndPassword(
+                                email,
+                                password,
+                                userName,
+                              );
+                        } else {
+                          buildSnackBar(
+                            context,
+                            "يجب الموافقة على الشروط والاحكام",
                           );
-                    else {
-                      buildSnackBar(
-                        context,
-                        "يجب الموافقة على الشروط والاحكام",
-                      );
-                    }
-                  } else {
-                    setState(() {
-                      autoValidateMode = AutovalidateMode.always;
-                    });
-                  }
-                },
-                text: "إنشاء حساب",
+                        }
+                      } else {
+                        setState(() {
+                          autoValidateMode = AutovalidateMode.always;
+                        });
+                      }
+                    },
+                    text: "إنشاء حساب",
+                  ),
+                  const SizedBox(height: 26),
+                  IsHaveAnAccountWidget(
+                    text1: "تمتلك حساب بالفعل؟",
+                    text2: "تسجيل دخول",
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(height: 26),
-              IsHaveAnAccountWidget(
-                text1: "تمتلك حساب بالفعل؟",
-                text2: "تسجيل دخول",
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
+            ),
           ),
         ),
       ),
