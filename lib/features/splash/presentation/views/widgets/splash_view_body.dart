@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fruit_hub/constants.dart';
@@ -16,14 +17,22 @@ class SplashViewBody extends StatefulWidget {
 }
 
 class _SplashViewBodyState extends State<SplashViewBody> {
+  bool get _usesNativeSplash =>
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS;
+
   @override
   void initState() {
-    excuteNaviagtion();
     super.initState();
+    Future<void>.microtask(excuteNaviagtion);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_usesNativeSplash) {
+      return const ColoredBox(color: Colors.white);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -42,19 +51,19 @@ class _SplashViewBodyState extends State<SplashViewBody> {
   }
 
   void excuteNaviagtion() {
-    bool isOnBoardingViewSeen = Prefs.getBool(kIsOnBoardingViewSeen);
-    Future.delayed(const Duration(seconds: 1), () {
-      if (isOnBoardingViewSeen) {
-        var isLoggedIn = FirebaseAuthService().isLoggedIn();
+    if (!mounted) return;
 
-        if (isLoggedIn) {
-          Navigator.pushReplacementNamed(context, MainView.routeName);
-        } else {
-          Navigator.pushReplacementNamed(context, SigninView.routeName);
-        }
+    final isOnBoardingViewSeen = Prefs.getBool(kIsOnBoardingViewSeen);
+    if (isOnBoardingViewSeen) {
+      final isLoggedIn = FirebaseAuthService().isLoggedIn();
+
+      if (isLoggedIn) {
+        Navigator.pushReplacementNamed(context, MainView.routeName);
       } else {
-        Navigator.pushReplacementNamed(context, OnBoardingView.routeName);
+        Navigator.pushReplacementNamed(context, SigninView.routeName);
       }
-    });
+    } else {
+      Navigator.pushReplacementNamed(context, OnBoardingView.routeName);
+    }
   }
 }

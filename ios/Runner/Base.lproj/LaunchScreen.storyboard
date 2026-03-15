@@ -16,13 +16,27 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="LaunchImage" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="SplashPlant" translatesAutoresizingMaskIntoConstraints="NO" id="N2n-plant-01">
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="SplashLogo" translatesAutoresizingMaskIntoConstraints="NO" id="N2n-logo-01">
+                            </imageView>
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="SplashBottom" translatesAutoresizingMaskIntoConstraints="NO" id="N2n-bottom-01">
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="1a2-6s-vTC"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="4X2-HB-R7a"/>
+                            <constraint firstItem="N2n-plant-01" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="1Top-Plant"/>
+                            <constraint firstAttribute="trailing" secondItem="N2n-plant-01" secondAttribute="trailing" id="2Trail-Plant"/>
+                            <constraint firstItem="N2n-plant-01" firstAttribute="width" constant="192" id="3Width-Plant"/>
+                            <constraint firstItem="N2n-plant-01" firstAttribute="height" constant="173" id="4Height-Plant"/>
+                            <constraint firstItem="N2n-logo-01" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="5CenterX-Logo"/>
+                            <constraint firstItem="N2n-logo-01" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="6CenterY-Logo"/>
+                            <constraint firstItem="N2n-logo-01" firstAttribute="width" constant="178" id="7Width-Logo"/>
+                            <constraint firstItem="N2n-logo-01" firstAttribute="height" constant="173" id="8Height-Logo"/>
+                            <constraint firstItem="N2n-bottom-01" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="9Lead-Bottom"/>
+                            <constraint firstAttribute="trailing" secondItem="N2n-bottom-01" secondAttribute="trailing" id="10Trail-Bottom"/>
+                            <constraint firstAttribute="bottom" secondItem="N2n-bottom-01" secondAttribute="bottom" id="11Bottom-Bottom"/>
+                            <constraint firstItem="N2n-bottom-01" firstAttribute="height" constant="156" id="12Height-Bottom"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -32,6 +46,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchImage" width="168" height="185"/>
+        <image name="SplashBottom" width="374" height="156"/>
+        <image name="SplashLogo" width="178" height="173"/>
+        <image name="SplashPlant" width="192" height="173"/>
     </resources>
 </document>
