@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
+import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
 import 'package:fruit_hub/features/checkout/presentation/manger/cubit/add_order_cubit_cubit.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_steps.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_steps_page_view.dart';
-import 'package:pay_with_paymob/pay_with_paymob.dart';
 import 'package:provider/provider.dart';
 
 class CheckoutViewBody extends StatefulWidget {
@@ -44,60 +44,71 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          CheckoutSteps(
-            onTap: (index) {
-              if (index < currentPageIndex) {
-                pageController.animateToPage(
-                  index,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              } else if (index == currentPageIndex) {
-                return;
-              } else {
-                if (currentPageIndex == 0) {
-                  if (context.read<OrderInputEntity>().payWithCash != null) {
-                    pageController.nextPage(
+    final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
+    final topSpacing = ResponsiveLayout.isMobile(context) ? 20.0 : 28.0;
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          child: Column(
+            children: [
+              SizedBox(height: topSpacing),
+              CheckoutSteps(
+                onTap: (index) {
+                  if (index < currentPageIndex) {
+                    pageController.animateToPage(
+                      index,
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
+                  } else if (index == currentPageIndex) {
+                    return;
                   } else {
-                    buildSnackBar(context, 'يرجى تحديد طريقة الدفع');
+                    if (currentPageIndex == 0) {
+                      if (context.read<OrderInputEntity>().payWithCash != null) {
+                        pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      } else {
+                        buildSnackBar(context, 'يرجى تحديد طريقة الدفع');
+                      }
+                    } else if (currentPageIndex == 1) {
+                      _handleAddressValidation();
+                    }
                   }
-                } else if (currentPageIndex == 1) {
-                  _handleAddressValidation();
-                }
-              }
-            },
-            pageController: pageController,
-            currentPageIndex: currentPageIndex,
+                },
+                pageController: pageController,
+                currentPageIndex: currentPageIndex,
+              ),
+              Expanded(
+                child: CheckoutStepsPageView(
+                  valueListenable: valueNotifier,
+                  pageController: pageController,
+                  formKey: _formKey,
+                ),
+              ),
+              CustomButton(
+                onPressed: () {
+                  if (currentPageIndex == 0) {
+                    _handleShippingSectionValidation(context);
+                  } else if (currentPageIndex == 1) {
+                    _handleAddressValidation();
+                  } else {
+                    context.read<AddOrderCubit>().submitOrder(
+                      order: context.read<OrderInputEntity>(),
+                    );
+                  }
+                },
+                text: getNextButtonText(currentPageIndex),
+              ),
+              const SizedBox(height: 32),
+            ],
           ),
-          Expanded(
-            child: CheckoutStepsPageView(
-              valueListenable: valueNotifier,
-              pageController: pageController,
-              formKey: _formKey,
-            ),
-          ),
-          CustomButton(
-            onPressed: () {
-              if (currentPageIndex == 0) {
-                _handleShippingSectionValidation(context);
-              } else if (currentPageIndex == 1) {
-                _handleAddressValidation();
-              } else {
-                _processPayment(context);
-              }
-            },
-            text: getNextButtonText(currentPageIndex),
-          ),
-          const SizedBox(height: 32),
-        ],
+        ),
       ),
     );
   }
@@ -121,9 +132,7 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
       case 1:
         return 'التالي';
       case 2:
-        return orderEntity.payWithCash == true
-            ? 'تأكيد الطلب'
-            : 'الدفع عبر Paymob';
+        return orderEntity.payWithCash == true ? 'تأكيد الطلب' : "الدفع";
       default:
         return 'التالي';
     }
@@ -140,31 +149,5 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
     } else {
       valueNotifier.value = AutovalidateMode.always;
     }
-  }
-
-  void _processPayment(BuildContext context) {
-    final orderEntity = context.read<OrderInputEntity>();
-    final addOrderCubit = context.read<AddOrderCubit>();
-    if (orderEntity.payWithCash == true) {
-      addOrderCubit.addOrder(order: orderEntity);
-      return;
-    }
-
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder:
-            (BuildContext context) => PaymentView(
-              price: orderEntity.calculateTotalPriceAfterDiscountAndShipping(),
-              onPaymentSuccess: () {
-                Navigator.of(context).pop();
-                addOrderCubit.addOrder(order: orderEntity);
-              },
-              onPaymentError: () {
-                Navigator.of(context).pop();
-                buildSnackBar(context, 'حدث خطأ في عملية الدفع');
-              },
-            ),
-      ),
-    );
   }
 }

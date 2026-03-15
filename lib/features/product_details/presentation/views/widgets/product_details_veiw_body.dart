@@ -7,6 +7,7 @@ import 'package:fruit_hub/features/product_details/presentation/views/widgets/pr
 
 class ProductDetailsViewBody extends StatefulWidget {
   const ProductDetailsViewBody({super.key, required this.productEntity});
+
   final ProductEntity productEntity;
 
   @override
@@ -18,74 +19,87 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(
-          bottom: kTopPaddding,
-          left: kTopPaddding,
-          right: kTopPaddding,
-        ),
-        child: CustomProductDetailsButton(
-          widget: widget,
-          selectedQuantity: selectedQuantity,
-          height: 56,
-        ),
-      ),
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalPadding = screenWidth >= 600 ? 24.0 : 16.0;
+    final heroHeight = (screenWidth * 0.82).clamp(280.0, 460.0).toDouble();
+    final productImageWidth = (screenWidth * 0.56).clamp(220.0, 360.0).toDouble();
+    final productImageHeight = productImageWidth * (167 / 221);
 
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.width * 0.8,
-              decoration: const BoxDecoration(
-                color: Color(0xFFF3F5F7),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.elliptical(375, 100),
-                  bottomRight: Radius.elliptical(375, 100),
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                width: double.infinity,
+                height: heroHeight,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F5F7),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.elliptical(screenWidth, 100),
+                    bottomRight: Radius.elliptical(screenWidth, 100),
+                  ),
                 ),
-              ),
-              child: Center(
-                child: Container(
-                  width: 221,
-                  height: 167,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        widget.productEntity.imageUrl ??
-                            'https://via.placeholder.com/150',
-                      ),
-                      fit: BoxFit.cover,
+                child: Center(
+                  child: Container(
+                    width: productImageWidth,
+                    height: productImageHeight,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.network(
+                      widget.productEntity.imageUrl ??
+                          'https://via.placeholder.com/150',
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.error, color: Colors.red);
+                      },
                     ),
                   ),
                 ),
               ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: kTopPaddding,
-                vertical: kTopPaddding,
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontalPadding,
+                  vertical: kTopPaddding,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ProductInfoSection(
+                      productEntity: widget.productEntity,
+                      selectedQuantity: selectedQuantity,
+                      onIncrement: () => setState(() => selectedQuantity++),
+                      onDecrement: () {
+                        if (selectedQuantity > 1) {
+                          setState(() => selectedQuantity--);
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    FeaturesProductSection(productEntity: widget.productEntity),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
-              child: Column(
-                children: [
-                  ProductInfoSection(
-                    productEntity: widget.productEntity,
-                    selectedQuantity: selectedQuantity,
-                    onIncrement: () => setState(() => selectedQuantity++),
-                    onDecrement: () {
-                      if (selectedQuantity > 1) {
-                        setState(() => selectedQuantity--);
-                      }
-                    },
-                  ),
-                  FeaturesProductSection(productEntity: widget.productEntity),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: horizontalPadding,
+            right: horizontalPadding,
+            bottom: kTopPaddding,
+          ),
+          child: CustomProductDetailsButton(
+            widget: widget,
+            selectedQuantity: selectedQuantity,
+            height: 56,
+          ),
         ),
       ),
     );

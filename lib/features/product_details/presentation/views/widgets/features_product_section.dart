@@ -11,40 +11,43 @@ class FeaturesProductSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final hasTwoColumns = constraints.maxWidth >= 280;
+        final itemWidth =
+            hasTwoColumns ? (constraints.maxWidth - 16) / 2 : constraints.maxWidth;
+
+        return Wrap(
+          spacing: 16,
+          runSpacing: 16,
           children: [
             FeatureProductContainer(
+              width: itemWidth,
               title: '${productEntity.expirationsMonths} يوم',
               subtitle: 'الصلاحيه',
               icon: SvgPicture.asset(Assets.assetsImagesCalendar),
             ),
-            const SizedBox(width: 16),
             FeatureProductContainer(
+              width: itemWidth,
               title: '100%',
               subtitle: 'اوجانيك',
               icon: SvgPicture.asset(Assets.assetsImagesHand),
             ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
             FeatureProductContainer(
+              width: itemWidth,
               title: '${productEntity.numberOfCalories} كالوري',
               subtitle: '${productEntity.unitAmount} جرام',
               icon: SvgPicture.asset(Assets.assetsImagesCalorie),
             ),
-            const SizedBox(width: 16),
             FeatureProductContainer(
+              width: itemWidth,
               title: '4.8',
               subtitle: "التقييم",
               icon: SvgPicture.asset(Assets.assetsImagesFavourites),
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

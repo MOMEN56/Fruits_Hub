@@ -15,7 +15,7 @@ List<BottomNavigationBarEntity> get bottomNavigationBarItems => [
   BottomNavigationBarEntity(
     activeImage: Assets.assetsImagesHomeActive,
     inActiveImage: Assets.assetsImagesHome,
-    name: 'الرئيسية',
+    name: 'الرئيسية',
   ),
   BottomNavigationBarEntity(
     activeImage: Assets.assetsImagesProductActive,
@@ -30,6 +30,6 @@ List<BottomNavigationBarEntity> get bottomNavigationBarItems => [
   BottomNavigationBarEntity(
     activeImage: Assets.assetsImagesUserActive,
     inActiveImage: Assets.assetsImagesUser,
-    name: 'حسابي',
+    name: 'طلباتي',
   ),
 ];

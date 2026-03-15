@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/services/shared_preferences_singleton.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
+import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
 import 'package:fruit_hub/features/auth/presentation/views/signin_view.dart';
 import 'package:fruit_hub/features/on_boarding/presentation/views/widgets/on_boarding_page_view.dart';
@@ -17,6 +18,7 @@ class OnBoardingViewBody extends StatefulWidget {
 class _OnBoardingViewBodyState extends State<OnBoardingViewBody> {
   late PageController pageController;
   var currentPage = 0;
+
   @override
   void initState() {
     pageController = PageController();
@@ -33,41 +35,48 @@ class _OnBoardingViewBodyState extends State<OnBoardingViewBody> {
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(child: OnBoardingPageView(pageController: pageController)),
-        DotsIndicator(
-          dotsCount: 2,
-          decorator: DotsDecorator(
-            activeColor: AppColors.primaryColor,
-            color:
-                currentPage == 1
-                    ? AppColors.primaryColor
-                    : AppColors.primaryColor.withOpacity(0.5),
-          ),
-        ),
-        const SizedBox(height: 29),
-        Visibility(
-          visible: currentPage == 1 ? true : false,
-          maintainSize: true,
-          maintainAnimation: true,
-          maintainState: true,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kHorizintalPadding),
-            child: CustomButton(
-              onPressed: () {
-                Prefs.setBool('KisOnBoardingViewSeen', true);
-                Navigator.of(
-                  context,
-                ).pushReplacementNamed(SigninView.routeName);
-              },
-              text: 'ابدأ الان',
+    final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 760),
+        child: Column(
+          children: [
+            Expanded(child: OnBoardingPageView(pageController: pageController)),
+            DotsIndicator(
+              dotsCount: 2,
+              decorator: DotsDecorator(
+                activeColor: AppColors.primaryColor,
+                color:
+                    currentPage == 1
+                        ? AppColors.primaryColor
+                        : AppColors.primaryColor.withValues(alpha: 0.5),
+              ),
             ),
-          ),
+            const SizedBox(height: 29),
+            Visibility(
+              visible: currentPage == 1,
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: CustomButton(
+                  onPressed: () {
+                    Prefs.setBool(kIsOnBoardingViewSeen, true);
+                    Navigator.of(context).pushReplacementNamed(SigninView.routeName);
+                  },
+                  text: 'ابدأ الان',
+                ),
+              ),
+            ),
+            const SizedBox(height: 43),
+          ],
         ),
-        const SizedBox(height: 43),
-      ],
+      ),
     );
   }
 }

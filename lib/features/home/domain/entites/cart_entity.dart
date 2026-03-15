@@ -14,6 +14,10 @@ class CartEntity {
     cartItems.remove(carItem);
   }
 
+  clear() {
+    cartItems.clear();
+  }
+
   double calculateTotalPrice() {
     double totalPrice = 0;
     for (var carItem in cartItems) {
@@ -24,7 +28,7 @@ class CartEntity {
 
   bool isExis(ProductEntity product) {
     for (var carItem in cartItems) {
-      if (carItem.productEntity == product) {
+      if (carItem.productEntity.code == product.code) {
         return true;
       }
     }
@@ -33,7 +37,7 @@ class CartEntity {
 
   CarItemEntity getCarItem(ProductEntity product) {
     for (var carItem in cartItems) {
-      if (carItem.productEntity == product) {
+      if (carItem.productEntity.code == product.code) {
         return carItem;
       }
     }

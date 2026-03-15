@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/features/home/presentation/views/cart_view.dart';
+import 'package:fruit_hub/features/home/presentation/views/orders_view.dart';
 import 'package:fruit_hub/features/home/presentation/views/products_view.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/home_view.dart';
 
@@ -12,7 +13,7 @@ class MainViewBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return IndexedStack(
       index: currentViewIndex,
-      children: const [HomeView(), ProductsView(), CartView()],
+      children: const [HomeView(), ProductsView(), CartView(), OrdersView()],
     );
   }
 }

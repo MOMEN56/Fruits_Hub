@@ -18,54 +18,60 @@ class ProductInfoSection extends StatelessWidget {
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
 
-  /// ودجت اختياري يظهر أسفل القسم
-
   @override
   Widget build(BuildContext context) {
+    final quantityScale = MediaQuery.sizeOf(context).width < 380 ? 1.0 : 1.12;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // اسم المنتج + السعر + QuantitySelector
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  productEntity.name,
-                  style: TextStyles.bold16,
-                  textAlign: TextAlign.right,
-                ),
-                Text(
-                  '${productEntity.price} جنيه / الكيلو',
-                  style: TextStyles.bold13.copyWith(
-                    color: AppColors.secondaryColor,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    productEntity.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    style: TextStyles.bold16,
                   ),
-                  textAlign: TextAlign.right,
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      '${productEntity.price.toStringAsFixed(0)} جنيه / الكيلو',
+                      textAlign: TextAlign.right,
+                      style: TextStyles.bold13.copyWith(
+                        color: AppColors.secondaryColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(width: 8),
             QuantitySelector(
               quantity: selectedQuantity,
-              scale: 1.22,
+              scale: quantityScale,
               onIncrement: onIncrement,
               onDecrement: onDecrement,
             ),
           ],
         ),
-
         const SizedBox(height: 8),
-
-        // تقييم المنتج
         Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const Icon(Icons.star, color: Colors.amber, size: 20),
-            const SizedBox(width: 4),
             Text(
-              '4.5',
-              style: TextStyles.semiBold13.copyWith(color: Colors.black),
+              'المراجعة',
+              style: TextStyles.bold13.copyWith(
+                color: const Color(0xFF1B5E37),
+                decoration: TextDecoration.underline,
+              ),
             ),
             const SizedBox(width: 4),
             Text(
@@ -74,27 +80,20 @@ class ProductInfoSection extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              'المراجعة',
-              style: TextStyles.bold13.copyWith(
-                color: const Color(0xFF1B5E37),
-                decoration: TextDecoration.underline,
-              ),
+              '4.5',
+              style: TextStyles.semiBold13.copyWith(color: Colors.black),
             ),
+            const SizedBox(width: 4),
+            const Icon(Icons.star, color: Colors.amber, size: 20),
           ],
         ),
-
         const SizedBox(height: 8),
-
-        // وصف المنتج
         Text(
           productEntity.description,
           textAlign: TextAlign.right,
           style: TextStyles.regular13.copyWith(color: Colors.grey),
         ),
-
         const SizedBox(height: 24),
-
-        // زر أو أي ودجت إضافي
       ],
     );
   }

@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fruit_hub/core/helper_fun/on-generate-route.dart';
+import 'package:fruit_hub/core/services/app_navigation_service.dart';
+import 'package:fruit_hub/core/services/app_startup_service.dart';
 import 'package:fruit_hub/core/services/custom_bloc_observer.dart';
 import 'package:fruit_hub/core/services/git_it_services.dart';
 import 'package:fruit_hub/core/services/subabase_services.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
-import 'package:fruit_hub/core/utils/app_keys.dart';
 import 'package:fruit_hub/features/splash/presentation/views/splash_view.dart';
 import 'package:fruit_hub/generated/l10n.dart';
 import 'package:fruit_hub/core/services/shared_preferences_singleton.dart';
-import 'package:pay_with_paymob/pay_with_paymob.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -21,13 +21,8 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Prefs.init();
-  PaymentData.initialize(
-    apiKey: KPaymobApiKey,
-    iframeId: KPaymobIframeId,
-    integrationCardId: KPaymobIntegrationCardId,
-    integrationMobileWalletId: KPaymobIntegrationMobileWalletId,
-  );
   setupGitIt();
+  AppStartupService.initialize();
   runApp(const FruitHub());
 }
 
@@ -38,6 +33,7 @@ class FruitHub extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: AppNavigationService.navigatorKey,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Cairo',
