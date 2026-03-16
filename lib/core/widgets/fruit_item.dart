@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/core/entities/product_entity.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
+import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
 
 class FruitItem extends StatelessWidget {
@@ -45,19 +46,10 @@ class FruitItem extends StatelessWidget {
                       flex: 6,
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(10, 12, 10, 0),
-                        child: Image.network(
-                          productEntity.imageUrl ??
-                              'https://via.placeholder.com/150',
+                        child: CustomNetworkImage(
+                          imageUrl: productEntity.imageUrl ?? '',
                           fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.error, color: Colors.red);
-                          },
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          },
+                          showLoadingIndicator: true,
                         ),
                       ),
                     ),
@@ -75,7 +67,11 @@ class FruitItem extends StatelessWidget {
                           child: const CircleAvatar(
                             radius: 18,
                             backgroundColor: AppColors.primaryColor,
-                            child: Icon(Icons.add, color: Colors.white, size: 20),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 10),

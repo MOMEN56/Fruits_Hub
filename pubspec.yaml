@@ -52,6 +52,8 @@ dependencies:
   skeletonizer: ^1.4.3
   equatable: ^2.0.8
   provider: ^6.1.5+1
+  awesome_snackbar_content: ^0.1.6
+  connectivity_plus: ^6.0.5
   pay_with_paymob:
     path: packages/pay_with_paymob
   uuid: ^4.5.2

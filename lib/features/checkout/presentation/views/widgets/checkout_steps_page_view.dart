@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/address_input_section.dart';
-import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_steps.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/payment_section.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/shipping_section.dart';
 

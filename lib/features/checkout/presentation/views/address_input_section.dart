@@ -29,7 +29,7 @@ class AddressInputSection extends StatelessWidget {
                     onSaved: (value) {
                       context
                           .read<OrderInputEntity>()
-                          .shippingAddressEntity!
+                          .shippingAddressEntity
                           .name = value!;
                     },
                     hintText: 'الاسم كامل',
@@ -40,7 +40,7 @@ class AddressInputSection extends StatelessWidget {
                     onSaved: (value) {
                       context
                           .read<OrderInputEntity>()
-                          .shippingAddressEntity!
+                          .shippingAddressEntity
                           .email = value!;
                     },
                     hintText: 'البريد الإلكتروني',
@@ -51,7 +51,7 @@ class AddressInputSection extends StatelessWidget {
                     onSaved: (value) {
                       context
                           .read<OrderInputEntity>()
-                          .shippingAddressEntity!
+                          .shippingAddressEntity
                           .address = value!;
                     },
                     hintText: 'العنوان',
@@ -62,7 +62,7 @@ class AddressInputSection extends StatelessWidget {
                     onSaved: (value) {
                       context
                           .read<OrderInputEntity>()
-                          .shippingAddressEntity!
+                          .shippingAddressEntity
                           .city = value!;
                     },
                     hintText: 'المدينه',
@@ -73,7 +73,7 @@ class AddressInputSection extends StatelessWidget {
                     onSaved: (value) {
                       context
                           .read<OrderInputEntity>()
-                          .shippingAddressEntity!
+                          .shippingAddressEntity
                           .floor = value!;
                     },
                     hintText: 'رقم الطابق , رقم الشقه ..',
@@ -84,7 +84,7 @@ class AddressInputSection extends StatelessWidget {
                     onSaved: (value) {
                       context
                           .read<OrderInputEntity>()
-                          .shippingAddressEntity!
+                          .shippingAddressEntity
                           .phone = value!;
                     },
                     hintText: 'رقم الهاتف',

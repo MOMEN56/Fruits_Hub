@@ -16,7 +16,9 @@ class NotificationsService {
   String? _activeUserId;
   bool _isDisposed = false;
 
-  Stream<List<NotificationEntity>> watchNotifications({required String userId}) {
+  Stream<List<NotificationEntity>> watchNotifications({
+    required String userId,
+  }) {
     if (_activeUserId != userId) {
       _activeUserId = userId;
       _subscribeToRealtimeChanges();
@@ -34,13 +36,11 @@ class NotificationsService {
         .or('user_id.eq.$userId,user_id.is.null')
         .order('created_at', ascending: false);
 
-    if (rows is! List) {
-      return const <NotificationEntity>[];
-    }
-
     return rows
         .whereType<Map>()
-        .map((row) => NotificationEntity.fromJson(Map<String, dynamic>.from(row)))
+        .map(
+          (row) => NotificationEntity.fromJson(Map<String, dynamic>.from(row)),
+        )
         .toList();
   }
 
@@ -83,16 +83,17 @@ class NotificationsService {
     }
 
     unawaited(_realtimeChannel?.unsubscribe());
-    _realtimeChannel = _supabaseClient.channel('public:notifications:$userId')
-      ..onPostgresChanges(
-        event: PostgresChangeEvent.all,
-        schema: 'public',
-        table: BackendEndpoint.notifications,
-        callback: (_) {
-          unawaited(refresh());
-        },
-      )
-      ..subscribe();
+    _realtimeChannel =
+        _supabaseClient.channel('public:notifications:$userId')
+          ..onPostgresChanges(
+            event: PostgresChangeEvent.all,
+            schema: 'public',
+            table: BackendEndpoint.notifications,
+            callback: (_) {
+              unawaited(refresh());
+            },
+          )
+          ..subscribe();
   }
 
   void dispose() {

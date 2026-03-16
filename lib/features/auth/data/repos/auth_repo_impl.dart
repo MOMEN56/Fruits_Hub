@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 
 import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/errors/exceptions.dart';
@@ -37,7 +38,12 @@ class AuthRepoImpl extends AuthRepo {
         password: password,
       );
 
-      final userEntity = UserEntity(name: name, email: email, uId: user.uid);
+      final userEntity = UserEntity(
+        name: name,
+        email: email,
+        uId: user.uid,
+        photoUrl: user.photoURL ?? '',
+      );
 
       await addUserData(user: userEntity);
       await saveUserData(user: userEntity);
@@ -106,10 +112,26 @@ class AuthRepoImpl extends AuthRepo {
 
   @override
   Future addUserData({required UserEntity user}) async {
-    await databaseServices.addData(
-      path: BackendEndpoint.addUserData,
-      data: UserModel.fromEntity(user).toMap(),
-    );
+    final userData = UserModel.fromEntity(user).toMap();
+
+    try {
+      await databaseServices.addData(
+        path: BackendEndpoint.addUserData,
+        data: userData,
+      );
+    } on PostgrestException catch (e) {
+      if (!_isMissingPhotoUrlColumnError(e)) {
+        rethrow;
+      }
+
+      final legacyUserData = Map<String, dynamic>.from(userData)
+        ..remove('photo_url');
+
+      await databaseServices.addData(
+        path: BackendEndpoint.addUserData,
+        data: legacyUserData,
+      );
+    }
   }
 
   @override
@@ -145,7 +167,16 @@ class AuthRepoImpl extends AuthRepo {
       userEntity = UserModel.fromFirebaseUser(user);
       await addUserData(user: userEntity);
     } else {
-      userEntity = UserModel.fromJson(userData);
+      final storedUser = UserModel.fromJson(userData);
+      userEntity = UserEntity(
+        name: storedUser.name,
+        email: storedUser.email,
+        uId: storedUser.uId,
+        photoUrl:
+            storedUser.photoUrl.isNotEmpty
+                ? storedUser.photoUrl
+                : (user.photoURL ?? ''),
+      );
     }
 
     await saveUserData(user: userEntity);
@@ -188,5 +219,12 @@ class AuthRepoImpl extends AuthRepo {
       await firebaseAuthService.deleteUser();
     }
   }
-}
 
+  bool _isMissingPhotoUrlColumnError(PostgrestException exception) {
+    final normalizedMessage = exception.message.toLowerCase();
+
+    return exception.code == 'PGRST204' &&
+        normalizedMessage.contains('photo_url') &&
+        normalizedMessage.contains('schema cache');
+  }
+}

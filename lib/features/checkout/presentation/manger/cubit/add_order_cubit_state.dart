@@ -24,7 +24,14 @@ final class AddOrderNeedsOnlinePayment extends AddOrderState {
   List<Object> get props => [requestId];
 }
 
-final class AddOrderSuccess extends AddOrderState {}
+final class AddOrderSuccess extends AddOrderState {
+  final String orderId;
+
+  const AddOrderSuccess({required this.orderId});
+
+  @override
+  List<Object> get props => [orderId];
+}
 
 final class AddOrderFailure extends AddOrderState {
   final String errorMessage;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/entities/product_entity.dart';
+import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
 import 'package:fruit_hub/features/product_details/presentation/views/widgets/custom_product_details_button.dart';
 import 'package:fruit_hub/features/product_details/presentation/views/widgets/features_product_section.dart';
 import 'package:fruit_hub/features/product_details/presentation/views/widgets/product_info_section.dart';
@@ -22,7 +23,8 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final horizontalPadding = screenWidth >= 600 ? 24.0 : 16.0;
     final heroHeight = (screenWidth * 0.82).clamp(280.0, 460.0).toDouble();
-    final productImageWidth = (screenWidth * 0.56).clamp(220.0, 360.0).toDouble();
+    final productImageWidth =
+        (screenWidth * 0.56).clamp(220.0, 360.0).toDouble();
     final productImageHeight = productImageWidth * (167 / 221);
 
     return Scaffold(
@@ -48,13 +50,10 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Image.network(
-                      widget.productEntity.imageUrl ??
-                          'https://via.placeholder.com/150',
+                    child: CustomNetworkImage(
+                      imageUrl: widget.productEntity.imageUrl ?? '',
                       fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.error, color: Colors.red);
-                      },
+                      showLoadingIndicator: true,
                     ),
                   ),
                 ),

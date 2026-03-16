@@ -15,9 +15,11 @@ class ProductsCubit extends Cubit<ProductsState> {
   List<ProductEntity> _allProducts = [];
   String _searchQuery = '';
   ProductsSortOption _selectedSortOption = ProductsSortOption.none;
+  bool _hasLoadedProducts = false;
 
   ProductsSortOption get selectedSortOption => _selectedSortOption;
   String get searchQuery => _searchQuery;
+  bool get hasUsableCache => _hasLoadedProducts;
 
   Future<void> getProducts() async {
     emit(ProductsLoading());
@@ -34,6 +36,7 @@ class ProductsCubit extends Cubit<ProductsState> {
         },
         (products) {
           log('Get products success: ${products.length}');
+          _hasLoadedProducts = true;
           _allProducts = products;
           _emitVisibleProducts();
         },
@@ -60,6 +63,7 @@ class ProductsCubit extends Cubit<ProductsState> {
         },
         (products) {
           log('Get best selling success: ${products.length}');
+          _hasLoadedProducts = true;
           _allProducts = products;
           _emitVisibleProducts();
         },
@@ -109,7 +113,9 @@ class ProductsCubit extends Cubit<ProductsState> {
         visibleProducts.sort((a, b) => a.price.compareTo(b.price));
         break;
       case ProductsSortOption.bestSelling:
-        visibleProducts.sort((a, b) => b.sellingCount.compareTo(a.sellingCount));
+        visibleProducts.sort(
+          (a, b) => b.sellingCount.compareTo(a.sellingCount),
+        );
         break;
     }
 
