@@ -1,4 +1,4 @@
-﻿import 'dart:developer';
+import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:fruit_hub/core/errors/failures.dart';
@@ -16,7 +16,7 @@ class OrderRepoImpl implements OrderRepo {
 
   OrderRepoImpl(this.fireStoreService);
   @override
-  Future<Either<Failure, void>> addOrder({
+  Future<Either<Failure, String>> addOrder({
     required OrderInputEntity order,
   }) async {
     try {
@@ -30,8 +30,10 @@ class OrderRepoImpl implements OrderRepo {
           path: BackendEndpoint.notifications,
           data: {
             'type': 'order_status',
-            'title_ar': '\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0637\u0644\u0628',
-            'message_ar': '\u064A\u062A\u0645 \u0627\u0644\u0645\u0631\u0627\u062C\u0639\u0629',
+            'title_ar':
+                '\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0637\u0644\u0628',
+            'message_ar':
+                '\u064A\u062A\u0645 \u0627\u0644\u0645\u0631\u0627\u062C\u0639\u0629',
             'status': 'pending',
             'user_id': orderModel.uId,
             'order_id': orderModel.orderId,
@@ -60,7 +62,7 @@ class OrderRepoImpl implements OrderRepo {
         orderId: orderModel.orderId,
       );
       await _tryNotifyDashboardAboutNewOrder(orderId: orderModel.orderId);
-      return Right(null);
+      return Right(orderModel.orderId);
     } catch (e) {
       return Left((ServerFailure(e.toString())));
     }
@@ -225,11 +227,12 @@ class OrderRepoImpl implements OrderRepo {
     required int incrementBy,
   }) async {
     final firestore = (fireStoreService as FireStoreService).firestore;
-    final snapshot = await firestore
-        .collection(BackendEndpoint.getProducts)
-        .where('code', isEqualTo: productCode)
-        .limit(1)
-        .get();
+    final snapshot =
+        await firestore
+            .collection(BackendEndpoint.getProducts)
+            .where('code', isEqualTo: productCode)
+            .limit(1)
+            .get();
 
     if (snapshot.docs.isEmpty) {
       return;
@@ -272,17 +275,20 @@ class OrderRepoImpl implements OrderRepo {
 
     if (fireStoreService is FireStoreService) {
       final firestore = (fireStoreService as FireStoreService).firestore;
-      final snapshot = await firestore
-          .collection(BackendEndpoint.addOrder)
-          .where('order_id', isEqualTo: orderId)
-          .limit(1)
-          .get();
+      final snapshot =
+          await firestore
+              .collection(BackendEndpoint.addOrder)
+              .where('order_id', isEqualTo: orderId)
+              .limit(1)
+              .get();
 
       if (snapshot.docs.isEmpty) {
         return;
       }
 
-      await snapshot.docs.first.reference.update({'selling_count_applied': true});
+      await snapshot.docs.first.reference.update({
+        'selling_count_applied': true,
+      });
     }
   }
 
@@ -310,8 +316,10 @@ class OrderRepoImpl implements OrderRepo {
           'user_id': userId,
           'order_id': orderId,
           'status': 'pending',
-          'title_ar': '\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0637\u0644\u0628',
-          'message_ar': '\u064A\u062A\u0645 \u0627\u0644\u0645\u0631\u0627\u062C\u0639\u0629',
+          'title_ar':
+              '\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0637\u0644\u0628',
+          'message_ar':
+              '\u064A\u062A\u0645 \u0627\u0644\u0645\u0631\u0627\u062C\u0639\u0629',
         },
       );
       log('[Push] User order-created response: ${response.data}');
@@ -354,4 +362,3 @@ class OrderRepoImpl implements OrderRepo {
     }
   }
 }
-

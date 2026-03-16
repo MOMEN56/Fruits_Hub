@@ -8,6 +8,7 @@ AppBar buildAppBar(
   required String title,
   bool showBackButton = true,
   bool showNotification = true,
+  VoidCallback? onBackPressed,
 }) {
   return AppBar(
     backgroundColor: Colors.white,
@@ -22,6 +23,10 @@ AppBar buildAppBar(
       visible: showBackButton,
       child: GestureDetector(
         onTap: () {
+          if (onBackPressed != null) {
+            onBackPressed();
+            return;
+          }
           Navigator.pop(context);
         },
         child: const Icon(Icons.arrow_back_ios_new),

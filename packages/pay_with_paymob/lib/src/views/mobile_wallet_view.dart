@@ -1,6 +1,5 @@
-
 import 'package:flutter/material.dart';
-
+import 'package:pay_with_paymob/src/helpers/paymob_snack_bar.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class MobileWalletScreen extends StatefulWidget {
@@ -10,17 +9,15 @@ class MobileWalletScreen extends StatefulWidget {
   const MobileWalletScreen({
     super.key,
     required this.redirectUrl,
-    required this.onSuccess, required this.onError,
+    required this.onSuccess,
+    required this.onError,
   });
-
   @override
   State<MobileWalletScreen> createState() => _MobileWalletScreenState();
 }
 
 class _MobileWalletScreenState extends State<MobileWalletScreen> {
   bool _didHandlePaymentResult = false;
-
-
   @override
   void initState() {
     super.initState();
@@ -47,26 +44,25 @@ class _MobileWalletScreenState extends State<MobileWalletScreen> {
     return SafeArea(
       child: Scaffold(
         body: WebViewWidget(
-            controller: WebViewController()
-              ..setJavaScriptMode(JavaScriptMode.unrestricted)
-              ..setBackgroundColor(const Color(0x00000000))
-              ..setNavigationDelegate(
-                NavigationDelegate(
-                  onNavigationRequest: (NavigationRequest request) async {
-                    _handlePaymobResult(request.url);
-                    return NavigationDecision.navigate;
-                  },
-                ),
-              )
-              ..addJavaScriptChannel(
-                'Toaster',
-                onMessageReceived: (JavaScriptMessage message) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(message.message)),
-                  );
+          controller: WebViewController()
+            ..setJavaScriptMode(JavaScriptMode.unrestricted)
+            ..setBackgroundColor(const Color(0x00000000))
+            ..setNavigationDelegate(
+              NavigationDelegate(
+                onNavigationRequest: (NavigationRequest request) async {
+                  _handlePaymobResult(request.url);
+                  return NavigationDecision.navigate;
                 },
-              )
-              ..loadRequest(Uri.parse(widget.redirectUrl))),
+              ),
+            )
+            ..addJavaScriptChannel(
+              'Toaster',
+              onMessageReceived: (JavaScriptMessage message) {
+                showPaymobSnackBar(context, message.message);
+              },
+            )
+            ..loadRequest(Uri.parse(widget.redirectUrl)),
+        ),
       ),
     );
   }

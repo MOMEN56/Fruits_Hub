@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/checkout_view.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
@@ -24,13 +25,14 @@ class CustomCartButton extends StatelessWidget {
                 ),
               );
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('لا يوجد منتجات في السلة')),
+              buildSnackBar(
+                context,
+                '\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u0646\u062A\u062C\u0627\u062A \u0641\u064A \u0627\u0644\u0633\u0644\u0629',
               );
             }
           },
           text:
-              'الدفع ${context.watch<CartCubit>().cartEntity.calculateTotalPrice()} جنيه',
+              '\u0627\u0644\u062F\u0641\u0639 ${context.watch<CartCubit>().cartEntity.calculateTotalPrice()} \u062C\u0646\u064A\u0647',
         );
       },
     );

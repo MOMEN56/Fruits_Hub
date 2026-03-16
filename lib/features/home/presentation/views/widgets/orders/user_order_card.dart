@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/user_order_entity.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_status_badge.dart';
@@ -76,7 +77,10 @@ class UserOrderCard extends StatelessWidget {
                   if (order.createdAt != null)
                     _OrderMetaChip(
                       icon: Icons.schedule,
-                      label: formatOrderDate(order.createdAt!, includeTime: true),
+                      label: formatOrderDate(
+                        order.createdAt!,
+                        includeTime: true,
+                      ),
                     ),
                 ],
               ),
@@ -123,10 +127,10 @@ class _OrderProductThumbnail extends StatelessWidget {
 
   Widget _buildImage(String imagePath) {
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return Image.network(
-        imagePath,
+      return CustomNetworkImage(
+        imageUrl: imagePath,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const _ThumbnailFallback(),
+        fallback: const _ThumbnailFallback(),
       );
     }
 
@@ -146,7 +150,10 @@ class _ThumbnailFallback extends StatelessWidget {
     return Container(
       color: const Color(0xFFEFF4F0),
       alignment: Alignment.center,
-      child: const Icon(Icons.image_not_supported_outlined, color: Color(0xFF8A9693)),
+      child: const Icon(
+        Icons.image_not_supported_outlined,
+        color: Color(0xFF8A9693),
+      ),
     );
   }
 }
@@ -173,7 +180,9 @@ class _OrderMetaChip extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: TextStyles.semiBold11.copyWith(color: const Color(0xFF4F5B59)),
+            style: TextStyles.semiBold11.copyWith(
+              color: const Color(0xFF4F5B59),
+            ),
           ),
         ],
       ),

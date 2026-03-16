@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
+import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/user_order_product_entity.dart';
 
 class OrderProductTile extends StatelessWidget {
@@ -34,26 +35,35 @@ class OrderProductTile extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'كود: ${product.code.isEmpty ? '--' : product.code}',
-                  style: TextStyles.regular11.copyWith(color: const Color(0xFF70807B)),
+                  style: TextStyles.regular11.copyWith(
+                    color: const Color(0xFF70807B),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEAF5EE),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         'الكمية: ${product.quantity}',
-                        style: TextStyles.semiBold11.copyWith(color: AppColors.primaryColor),
+                        style: TextStyles.semiBold11.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
                       ),
                     ),
                     const Spacer(),
                     Text(
                       '${(product.price * product.quantity).toStringAsFixed(2)} جنيه',
-                      style: TextStyles.bold13.copyWith(color: AppColors.secondaryColor),
+                      style: TextStyles.bold13.copyWith(
+                        color: AppColors.secondaryColor,
+                      ),
                     ),
                   ],
                 ),
@@ -84,15 +94,16 @@ class _ProductImage extends StatelessWidget {
         child:
             hasImage
                 ? (path.startsWith('http://') || path.startsWith('https://')
-                    ? Image.network(
-                      path,
+                    ? CustomNetworkImage(
+                      imageUrl: path,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const _ProductImageFallback(),
+                      fallback: const _ProductImageFallback(),
                     )
                     : Image.asset(
                       path,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const _ProductImageFallback(),
+                      errorBuilder:
+                          (_, __, ___) => const _ProductImageFallback(),
                     ))
                 : const _ProductImageFallback(),
       ),
@@ -108,7 +119,10 @@ class _ProductImageFallback extends StatelessWidget {
     return Container(
       color: const Color(0xFFEFF4F0),
       alignment: Alignment.center,
-      child: const Icon(Icons.image_not_supported_outlined, color: Color(0xFF85948F)),
+      child: const Icon(
+        Icons.image_not_supported_outlined,
+        color: Color(0xFF85948F),
+      ),
     );
   }
 }

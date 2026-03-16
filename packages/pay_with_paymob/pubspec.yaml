@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   webview_flutter: ^4.9.0
+  awesome_snackbar_content: ^0.1.6
 
 dev_dependencies:
   flutter_test:

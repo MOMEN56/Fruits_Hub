@@ -6,6 +6,18 @@ import 'dart:developer';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthService {
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
+
+    try {
+      await GoogleSignIn().signOut();
+    } catch (_) {}
+
+    try {
+      await FacebookAuth.instance.logOut();
+    } catch (_) {}
+  }
+
   Future deleteUser() async {
     await FirebaseAuth.instance.currentUser!.delete();
   }

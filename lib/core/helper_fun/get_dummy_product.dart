@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:fruit_hub/core/entities/product_entity.dart';
 
 ProductEntity getDummyProduct() {

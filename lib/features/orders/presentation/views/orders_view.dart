@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/features/orders/data/services/orders_service.dart';
@@ -78,11 +79,11 @@ class _OrdersViewBodyState extends State<_OrdersViewBody> {
       setState(() {
         _updatingOrderKeys.remove(state.orderKey);
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Order updated to ${_statusLabel(state.nextStatus)}'),
-          behavior: SnackBarBehavior.floating,
-        ),
+      buildSnackBar(
+        context,
+        'Order updated to ${_statusLabel(state.nextStatus)}',
+        type: AppSnackBarType.success,
+        title: 'Updated',
       );
       context.read<FetchOrdersCubit>().fetchOrders();
       return;
@@ -92,13 +93,7 @@ class _OrdersViewBodyState extends State<_OrdersViewBody> {
       setState(() {
         _updatingOrderKeys.remove(state.orderKey);
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.errorMessage),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFFC62828),
-        ),
-      );
+      buildSnackBar(context, state.errorMessage);
     }
   }
 
@@ -291,21 +286,22 @@ class _OrdersViewBodyState extends State<_OrdersViewBody> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: _statusFilters.map((status) {
-                        final isSelected = status == _selectedFilter;
-                        return Padding(
-                          padding: const EdgeInsetsDirectional.only(end: 8),
-                          child: ChoiceChip(
-                            label: Text(_statusLabel(status)),
-                            selected: isSelected,
-                            onSelected: (_) {
-                              setState(() {
-                                _selectedFilter = status;
-                              });
-                            },
-                          ),
-                        );
-                      }).toList(),
+                      children:
+                          _statusFilters.map((status) {
+                            final isSelected = status == _selectedFilter;
+                            return Padding(
+                              padding: const EdgeInsetsDirectional.only(end: 8),
+                              child: ChoiceChip(
+                                label: Text(_statusLabel(status)),
+                                selected: isSelected,
+                                onSelected: (_) {
+                                  setState(() {
+                                    _selectedFilter = status;
+                                  });
+                                },
+                              ),
+                            );
+                          }).toList(),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -461,7 +457,9 @@ class _UserOrdersCard extends StatelessWidget {
                 backgroundColor: const Color(0xFFEAF4EE),
                 child: Text(
                   group.avatarInitial,
-                  style: TextStyles.bold13.copyWith(color: AppColors.primaryColor),
+                  style: TextStyles.bold13.copyWith(
+                    color: AppColors.primaryColor,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -483,7 +481,10 @@ class _UserOrdersCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFEAF5EE),
                   borderRadius: BorderRadius.circular(20),
@@ -569,44 +570,46 @@ class _UserOrdersCard extends StatelessWidget {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: actions.map((action) {
-                        final isCancelAction = action.nextStatus == 'cancelled';
-                        return FilledButton(
-                          onPressed:
-                              isUpdating
-                                  ? null
-                                  : () => onUpdateOrderStatus(
-                                    order,
-                                    action.nextStatus,
-                                  ),
-                          style: FilledButton.styleFrom(
-                            backgroundColor:
-                                isCancelAction
-                                    ? const Color(0xFFFFEBEE)
-                                    : const Color(0xFFE8F5E9),
-                            foregroundColor:
-                                isCancelAction
-                                    ? const Color(0xFFC62828)
-                                    : const Color(0xFF2E7D32),
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
-                            ),
-                            textStyle: TextStyles.semiBold13,
-                          ),
-                          child:
-                              isUpdating
-                                  ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                  : Text(action.label),
-                        );
-                      }).toList(),
+                      children:
+                          actions.map((action) {
+                            final isCancelAction =
+                                action.nextStatus == 'cancelled';
+                            return FilledButton(
+                              onPressed:
+                                  isUpdating
+                                      ? null
+                                      : () => onUpdateOrderStatus(
+                                        order,
+                                        action.nextStatus,
+                                      ),
+                              style: FilledButton.styleFrom(
+                                backgroundColor:
+                                    isCancelAction
+                                        ? const Color(0xFFFFEBEE)
+                                        : const Color(0xFFE8F5E9),
+                                foregroundColor:
+                                    isCancelAction
+                                        ? const Color(0xFFC62828)
+                                        : const Color(0xFF2E7D32),
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                textStyle: TextStyles.semiBold13,
+                              ),
+                              child:
+                                  isUpdating
+                                      ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                      : Text(action.label),
+                            );
+                          }).toList(),
                     ),
                   ],
                 ],
@@ -638,7 +641,9 @@ class _OrdersErrorState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyles.regular13.copyWith(color: const Color(0xFF455A64)),
+              style: TextStyles.regular13.copyWith(
+                color: const Color(0xFF455A64),
+              ),
             ),
             const SizedBox(height: 12),
             FilledButton(onPressed: onRetry, child: const Text('Retry')),

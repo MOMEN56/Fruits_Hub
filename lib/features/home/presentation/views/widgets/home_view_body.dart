@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fruit_hub/core/connectivity/connection_gate.dart';
 import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/products_cubit/cubit/products_cubit.dart';
 import 'package:fruit_hub/core/utils/responsive_layout.dart';
@@ -36,37 +37,41 @@ class _HomeViewBodyState extends State<HomeViewBody> {
   Widget build(BuildContext context) {
     final productsCubit = context.watch<ProductsCubit>();
     final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
-    return Align(
-      alignment: Alignment.topCenter,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1200),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    SizedBox(height: kTopPaddding),
-                    CustomHomeAppbar(),
-                    SizedBox(height: 16),
-                    SearchTextField(
-                      controller: _searchController,
-                      onChanged: context.read<ProductsCubit>().searchProducts,
-                      selectedSortOption: productsCubit.selectedSortOption,
-                      onSortSelected:
-                          context.read<ProductsCubit>().updateSortOption,
-                    ),
-                    SizedBox(height: 12),
-                    FeaturedList(),
-                    SizedBox(height: 12),
-                    BestSellingHeader(),
-                    SizedBox(height: 8),
-                  ],
+    return ConnectionGate(
+      hasUsableCache: productsCubit.hasUsableCache,
+      onRetry: () => context.read<ProductsCubit>().getBestSellingProducts(),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      SizedBox(height: kTopPaddding),
+                      CustomHomeAppbar(),
+                      SizedBox(height: 16),
+                      SearchTextField(
+                        controller: _searchController,
+                        onChanged: context.read<ProductsCubit>().searchProducts,
+                        selectedSortOption: productsCubit.selectedSortOption,
+                        onSortSelected:
+                            context.read<ProductsCubit>().updateSortOption,
+                      ),
+                      SizedBox(height: 12),
+                      FeaturedList(),
+                      SizedBox(height: 12),
+                      BestSellingHeader(),
+                      SizedBox(height: 8),
+                    ],
+                  ),
                 ),
-              ),
-              ProductsGridViewBlocBuilder(),
-            ],
+                ProductsGridViewBlocBuilder(),
+              ],
+            ),
           ),
         ),
       ),
