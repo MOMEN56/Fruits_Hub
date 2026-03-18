@@ -1,15 +1,16 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:fruit_hub/core/services/current_user_service.dart';
 import 'package:fruit_hub/features/notifications/data/services/notifications_service.dart';
 import 'package:fruit_hub/features/notifications/domain/entities/notification_entity.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 import 'notifications_state.dart';
 
 class NotificationsCubit extends Cubit<NotificationsState> {
   NotificationsCubit(this._notificationsService, this._currentUserService)
-      : super(NotificationsInitial());
+    : super(NotificationsInitial());
 
   final NotificationsService _notificationsService;
   final CurrentUserService _currentUserService;
@@ -19,7 +20,11 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   void initialize() {
     final userId = _currentUserService.getCurrentUserId();
     if (userId == null) {
-      emit(const NotificationsUnauthenticated(message: 'سجل الدخول لعرض الإشعارات'));
+      emit(
+        NotificationsUnauthenticated(
+          message: S.current.unauthenticatedToViewNotifications,
+        ),
+      );
       return;
     }
     _loadNotificationsForUser(userId: userId);
@@ -28,7 +33,9 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   void _loadNotificationsForUser({required String userId}) {
     final normalizedUserId = userId.trim();
     if (normalizedUserId.isEmpty) {
-      emit(const NotificationsFailure(message: 'تعذر تحديد المستخدم الحالي'));
+      emit(
+        NotificationsFailure(message: S.current.unableToIdentifyCurrentUser),
+      );
       return;
     }
 

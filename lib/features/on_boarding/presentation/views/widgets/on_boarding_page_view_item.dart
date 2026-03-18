@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fruit_hub/core/services/shared_preferences_singleton.dart';
 import 'package:fruit_hub/features/auth/presentation/views/signin_view.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class OnBoardingPageViewItem extends StatelessWidget {
   const OnBoardingPageViewItem({
@@ -21,6 +22,8 @@ class OnBoardingPageViewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final imageHeight =
@@ -60,11 +63,11 @@ class OnBoardingPageViewItem extends StatelessWidget {
                                 context,
                               ).popAndPushNamed(SigninView.routeName);
                             },
-                            child: const Padding(
-                              padding: EdgeInsets.all(16),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
                               child: Text(
-                                'تخط',
-                                style: TextStyle(
+                                l10n.skip,
+                                style: const TextStyle(
                                   color: Color(0xFF949D9E),
                                   fontSize: 13,
                                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class HighlightedOrderBanner extends StatelessWidget {
   const HighlightedOrderBanner({super.key, required this.orderId});
@@ -15,9 +16,7 @@ class HighlightedOrderBanner extends StatelessWidget {
         color: const Color(0xFFEAF4FF),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(
-        'تم فتح الإشعار الخاص بالطلب رقم: $orderId',
-      ),
+      child: Text(S.of(context).highlightedOrderBanner(orderId)),
     );
   }
 }

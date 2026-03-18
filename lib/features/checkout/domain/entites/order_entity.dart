@@ -1,24 +1,56 @@
+import 'package:equatable/equatable.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/shipping_address_entity.dart';
 import 'package:fruit_hub/features/home/domain/entites/cart_entity.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
-class OrderInputEntity {
-  final String uID;
+class OrderInputEntity extends Equatable {
+  final String userId;
   final CartEntity cartEntity;
-  bool? payWithCash;
-  ShippingAddressEntity shippingAddressEntity;
-  OrderInputEntity(
+  final bool? payWithCash;
+  final ShippingAddressEntity shippingAddressEntity;
+
+  const OrderInputEntity(
     this.cartEntity, {
     this.payWithCash,
     required this.shippingAddressEntity,
-    required this.uID,
+    required this.userId,
   });
 
+  OrderInputEntity copyWith({
+    String? userId,
+    CartEntity? cartEntity,
+    bool? payWithCash,
+    bool clearPaymentMethod = false,
+    ShippingAddressEntity? shippingAddressEntity,
+  }) {
+    return OrderInputEntity(
+      cartEntity ?? this.cartEntity,
+      userId: userId ?? this.userId,
+      payWithCash:
+          clearPaymentMethod ? null : (payWithCash ?? this.payWithCash),
+      shippingAddressEntity:
+          shippingAddressEntity ?? this.shippingAddressEntity,
+    );
+  }
+
+  bool get hasSelectedPaymentMethod => payWithCash != null;
+
+  bool get isCashPayment => payWithCash == true;
+
+  String get nextActionLabel {
+    return isCashPayment ? S.current.confirmOrder : S.current.payment;
+  }
+
+  double get subTotalPrice => cartEntity.calculateTotalPrice();
+
+  double get totalPrice => calculateTotalPriceAfterDiscountAndShipping();
+
+  double get shippingCost => calculateShippingCost();
+
+  double get shippingDiscount => calcualteShippingDiscount();
+
   double calculateShippingCost() {
-    if (payWithCash!) {
-      return 30;
-    } else {
-      return 0;
-    }
+    return isCashPayment ? 30 : 0;
   }
 
   double calcualteShippingDiscount() {
@@ -33,6 +65,14 @@ class OrderInputEntity {
 
   @override
   String toString() {
-    return 'OrderEntity{uID: $uID, cartEntity: $cartEntity, payWithCash: $payWithCash, shippingAddressEntity: $shippingAddressEntity}';
+    return 'OrderEntity{userId: $userId, cartEntity: $cartEntity, payWithCash: $payWithCash, shippingAddressEntity: $shippingAddressEntity}';
   }
+
+  @override
+  List<Object?> get props => [
+    userId,
+    cartEntity,
+    payWithCash,
+    shippingAddressEntity,
+  ];
 }

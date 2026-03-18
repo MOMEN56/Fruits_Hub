@@ -1,26 +1,28 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fruit_hub/constants.dart';
-import 'package:fruit_hub/core/helper_fun/get_user.dart';
 import 'package:fruit_hub/core/notification_widget.dart';
-import 'package:fruit_hub/core/services/firebase_auth_service.dart';
+import 'package:fruit_hub/core/services/current_user_service.dart';
 import 'package:fruit_hub/core/services/git_it_services.dart';
-import 'package:fruit_hub/core/services/shared_preferences_singleton.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
 import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
 import 'package:fruit_hub/features/auth/domain/entites/user_entity.dart';
+import 'package:fruit_hub/features/auth/domain/usecases/sign_out_use_case.dart';
 import 'package:fruit_hub/features/auth/presentation/views/signin_view.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class CustomHomeAppbar extends StatelessWidget {
   const CustomHomeAppbar({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
     final isMobile = ResponsiveLayout.isMobile(context);
     final avatarSize = isMobile ? 44.0 : 52.0;
-    final user = getUser();
+    final user =
+        getIt<CurrentUserService>().getCurrentUser() ??
+        UserEntity(name: l10n.user, email: '', uId: '');
     final resolvedPhotoUrl = _resolvedPhotoUrl(user);
 
     return ListTile(
@@ -46,7 +48,7 @@ class CustomHomeAppbar extends StatelessWidget {
         ),
       ),
       title: Text(
-        'صباح الخير !..',
+        l10n.goodMorning,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         textAlign: TextAlign.right,
@@ -88,6 +90,7 @@ class CustomHomeAppbar extends StatelessWidget {
     required UserEntity user,
     required String resolvedPhotoUrl,
   }) async {
+    final l10n = S.of(context);
     final rootContext = context;
 
     await showModalBottomSheet<void>(
@@ -132,16 +135,14 @@ class CustomHomeAppbar extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            user.name.isNotEmpty ? user.name : 'المستخدم',
+                            user.name.isNotEmpty ? user.name : l10n.user,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyles.bold16,
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            user.email.isNotEmpty
-                                ? user.email
-                                : 'لا يوجد بريد إلكتروني',
+                            user.email.isNotEmpty ? user.email : l10n.noEmail,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyles.regular13.copyWith(
@@ -169,13 +170,13 @@ class CustomHomeAppbar extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    'تسجيل الخروج',
+                    l10n.signOut,
                     style: TextStyles.semiBold16.copyWith(
                       color: const Color(0xFFD92D20),
                     ),
                   ),
                   subtitle: Text(
-                    'الخروج من الحساب الحالي',
+                    l10n.signOutDescription,
                     style: TextStyles.regular13.copyWith(
                       color: const Color(0xFFB54708),
                     ),
@@ -194,8 +195,7 @@ class CustomHomeAppbar extends StatelessWidget {
   }
 
   Future<void> _signOut(BuildContext context) async {
-    await getIt<FirebaseAuthService>().signOut();
-    await Prefs.setString(kUserData, '');
+    await getIt<SignOutUseCase>().call();
 
     if (!context.mounted) {
       return;

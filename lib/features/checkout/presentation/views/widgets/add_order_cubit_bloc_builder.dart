@@ -5,6 +5,7 @@ import 'package:fruit_hub/core/widgets/custom_progress_hud.dart';
 import 'package:fruit_hub/features/checkout/presentation/manger/cubit/add_order_cubit_cubit.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/order_success_view.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 import 'package:pay_with_paymob/pay_with_paymob.dart';
 
 class AddOrderCubitBlocBuilder extends StatelessWidget {
@@ -35,7 +36,7 @@ class AddOrderCubitBlocBuilder extends StatelessWidget {
                       Navigator.of(listenerContext).pop();
                       buildSnackBar(
                         listenerContext,
-                        '\u062D\u062F\u062B \u062E\u0637\u0623 \u0641\u064A \u0639\u0645\u0644\u064A\u0629 \u0627\u0644\u062F\u0641\u0639',
+                        S.of(listenerContext).paymentError,
                       );
                     },
                   ),

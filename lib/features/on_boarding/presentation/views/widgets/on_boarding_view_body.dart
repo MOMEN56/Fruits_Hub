@@ -7,6 +7,7 @@ import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
 import 'package:fruit_hub/features/auth/presentation/views/signin_view.dart';
 import 'package:fruit_hub/features/on_boarding/presentation/views/widgets/on_boarding_page_view.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class OnBoardingViewBody extends StatefulWidget {
   const OnBoardingViewBody({super.key});
@@ -37,6 +38,7 @@ class _OnBoardingViewBodyState extends State<OnBoardingViewBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
     final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
 
     return Align(
@@ -69,7 +71,7 @@ class _OnBoardingViewBodyState extends State<OnBoardingViewBody> {
                     Prefs.setBool(kIsOnBoardingViewSeen, true);
                     Navigator.of(context).pushReplacementNamed(SigninView.routeName);
                   },
-                  text: 'ابدأ الان',
+                  text: l10n.startNow,
                 ),
               ),
             ),

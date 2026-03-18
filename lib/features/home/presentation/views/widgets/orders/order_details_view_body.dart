@@ -5,6 +5,7 @@ import 'package:fruit_hub/features/checkout/domain/entites/user_order_entity.dar
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_product_tile.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_summary_grid.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_ui_mapper.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class OrderDetailsViewBody extends StatelessWidget {
   const OrderDetailsViewBody({super.key, required this.order});
@@ -13,6 +14,8 @@ class OrderDetailsViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return CustomScrollView(
       slivers: [
         SliverAppBar(
@@ -36,7 +39,7 @@ class OrderDetailsViewBody extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'تفاصيل الطلب #${shortOrderId(order.orderId)}',
+                        l10n.orderDetailsTitle(shortOrderId(order.orderId)),
                         style: TextStyles.bold19.copyWith(color: Colors.white),
                       ),
                       const SizedBox(height: 10),
@@ -48,11 +51,16 @@ class OrderDetailsViewBody extends StatelessWidget {
                       ),
                       const Spacer(),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.35),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -65,8 +73,11 @@ class OrderDetailsViewBody extends StatelessWidget {
                             const SizedBox(width: 6),
                             Flexible(
                               child: Text(
-                                order.shippingAddress ?? 'عنوان الشحن غير متوفر',
-                                style: TextStyles.regular11.copyWith(color: Colors.white),
+                                order.shippingAddress ??
+                                    l10n.shippingAddressUnavailable,
+                                style: TextStyles.regular11.copyWith(
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ],
@@ -90,7 +101,7 @@ class OrderDetailsViewBody extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 22, 16, 10),
             child: Row(
               children: [
-                Text('المنتجات', style: TextStyles.bold19),
+                Text(l10n.products, style: TextStyles.bold19),
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -100,7 +111,9 @@ class OrderDetailsViewBody extends StatelessWidget {
                   ),
                   child: Text(
                     '${order.products.length}',
-                    style: TextStyles.semiBold13.copyWith(color: AppColors.primaryColor),
+                    style: TextStyles.semiBold13.copyWith(
+                      color: AppColors.primaryColor,
+                    ),
                   ),
                 ),
               ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/features/notifications/domain/entities/notification_entity.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class NotificationCard extends StatelessWidget {
   const NotificationCard({
@@ -15,11 +16,13 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = notification.titleAr.trim().isEmpty
-        ? 'تحديث الطلب'
-        : notification.titleAr.trim();
+    final l10n = S.of(context);
+    final title =
+        notification.titleAr.trim().isEmpty
+            ? l10n.orderUpdate
+            : notification.titleAr.trim();
     final message = _resolveNotificationMessage(notification);
-    final createdAtLabel = _formatRelativeTime(notification.createdAt);
+    final createdAtLabel = _formatRelativeTime(notification.createdAt, l10n);
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
@@ -78,7 +81,7 @@ class NotificationCard extends StatelessWidget {
                 if (onOpenOrders != null)
                   TextButton(
                     onPressed: onOpenOrders,
-                    child: const Text('عرض الطلبات'),
+                    child: Text(l10n.viewOrders),
                   ),
               ],
             ),
@@ -97,35 +100,35 @@ class NotificationCard extends StatelessWidget {
     final normalizedStatus = (notification.status ?? '').trim().toLowerCase();
     switch (normalizedStatus) {
       case 'pending':
-        return 'يتم المراجعة';
+        return S.current.pendingReview;
       case 'accepted':
-        return 'يتم تحضيره';
+        return S.current.beingPrepared;
       case 'delivered':
       case 'completed':
-        return 'تم التوصيل';
+        return S.current.delivered;
       case 'cancelled':
-        return 'ملغي';
+        return S.current.cancelled;
       default:
-        return 'لديك إشعار جديد';
+        return S.current.newNotification;
     }
   }
 
-  String _formatRelativeTime(DateTime value) {
+  String _formatRelativeTime(DateTime value, S l10n) {
     final now = DateTime.now();
     final localDate = value.toLocal();
     final diff = now.difference(localDate);
 
     if (diff.inSeconds < 60) {
-      return 'الآن';
+      return l10n.now;
     }
     if (diff.inMinutes < 60) {
-      return 'منذ ${diff.inMinutes} دقيقة';
+      return l10n.minutesAgo(diff.inMinutes);
     }
     if (diff.inHours < 24) {
-      return 'منذ ${diff.inHours} ساعة';
+      return l10n.hoursAgo(diff.inHours);
     }
     if (diff.inDays < 7) {
-      return 'منذ ${diff.inDays} يوم';
+      return l10n.daysAgo(diff.inDays);
     }
 
     String pad(int number) => number.toString().padLeft(2, '0');

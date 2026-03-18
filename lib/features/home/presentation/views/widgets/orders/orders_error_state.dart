@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class OrdersErrorState extends StatelessWidget {
   const OrdersErrorState({
@@ -21,7 +22,10 @@ class OrdersErrorState extends StatelessWidget {
           const SizedBox(height: 8),
           Text(message, style: TextStyles.semiBold13, textAlign: TextAlign.center),
           const SizedBox(height: 12),
-          TextButton(onPressed: onRetry, child: const Text('إعادة المحاولة')),
+          TextButton(
+            onPressed: onRetry,
+            child: Text(S.of(context).retry),
+          ),
         ],
       ),
     );

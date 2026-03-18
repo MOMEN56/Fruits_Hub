@@ -4,6 +4,7 @@ import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
 import 'package:fruit_hub/features/product_details/presentation/views/widgets/product_details_veiw_body.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class CustomProductDetailsButton extends StatelessWidget {
   const CustomProductDetailsButton({
@@ -21,11 +22,12 @@ class CustomProductDetailsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return CustomButton(
       width: width,
       height: height,
-      text:
-          '\u0623\u0636\u0641 \u0625\u0644\u0649 \u0627\u0644\u0633\u0644\u0629',
+      text: l10n.addToCart,
       onPressed: () async {
         await context.read<CartCubit>().addProduct(
           widget.productEntity,
@@ -34,10 +36,9 @@ class CustomProductDetailsButton extends StatelessWidget {
         if (!context.mounted) return;
         buildSnackBar(
           context,
-          '\u062A\u0645\u062A \u0625\u0636\u0627\u0641\u0629 $selectedQuantity \u0645\u0646 ${widget.productEntity.name} \u0625\u0644\u0649 \u0627\u0644\u0633\u0644\u0629',
+          l10n.addedQuantityToCart(selectedQuantity, widget.productEntity.name),
           type: AppSnackBarType.success,
-          title:
-              '\u062A\u0645\u062A \u0627\u0644\u0625\u0636\u0627\u0641\u0629',
+          title: l10n.addSuccessTitle,
         );
       },
     );

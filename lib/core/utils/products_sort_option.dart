@@ -1,3 +1,5 @@
+import 'package:fruit_hub/generated/l10n.dart';
+
 enum ProductsSortOption {
   none,
   priceHighToLow,
@@ -11,13 +13,13 @@ extension ProductsSortOptionExtension on ProductsSortOption {
   String get label {
     switch (this) {
       case ProductsSortOption.none:
-        return 'الترتيب الافتراضي';
+        return S.current.defaultSort;
       case ProductsSortOption.priceHighToLow:
-        return 'السعر من الأعلى إلى الأقل';
+        return S.current.priceHighToLow;
       case ProductsSortOption.priceLowToHigh:
-        return 'السعر من الأقل إلى الأعلى';
+        return S.current.priceLowToHigh;
       case ProductsSortOption.bestSelling:
-        return 'الأكثر مبيعًا إلى الأقل';
+        return S.current.bestSellingFirst;
     }
   }
 }

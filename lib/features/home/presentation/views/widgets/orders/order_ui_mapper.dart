@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 String shortOrderId(String orderId) {
   if (orderId.length <= 8) return orderId;
@@ -7,23 +8,25 @@ String shortOrderId(String orderId) {
 
 String paymentMethodLabel(String method) {
   final normalized = method.toLowerCase();
-  if (normalized.contains('cash')) return 'كاش';
-  if (normalized.contains('online')) return 'أونلاين';
+  if (normalized.contains('cash')) return S.current.cashLabel;
+  if (normalized.contains('online')) return S.current.onlineLabel;
   return method;
 }
 
 String statusLabel(String status) {
   final normalized = status.toLowerCase();
   return switch (normalized) {
-    'pending' => 'قيد المراجعة',
-    'accepted' => 'يتم تحضيره',
-    'completed' || 'delivered' => 'تم التوصيل',
-    'cancelled' => 'ملغي',
+    'pending' => S.current.pendingReview,
+    'accepted' => S.current.beingPrepared,
+    'completed' || 'delivered' => S.current.delivered,
+    'cancelled' => S.current.cancelled,
     _ => status,
   };
 }
 
-String detailsStatusLabel(String status) => 'الحالة: ${statusLabel(status)}';
+String detailsStatusLabel(String status) {
+  return S.current.detailsStatusLabel(statusLabel(status));
+}
 
 Color statusBadgeBackgroundColor(String status) {
   final normalized = status.toLowerCase();

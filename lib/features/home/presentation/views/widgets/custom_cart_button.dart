@@ -5,12 +5,15 @@ import 'package:fruit_hub/core/widgets/custom_button.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/checkout_view.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_item_cubit/cubit/cart_item_cubit.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class CustomCartButton extends StatelessWidget {
   const CustomCartButton({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return BlocBuilder<CartItemCubit, CartItemState>(
       builder: (context, state) {
         return CustomButton(
@@ -25,14 +28,12 @@ class CustomCartButton extends StatelessWidget {
                 ),
               );
             } else {
-              buildSnackBar(
-                context,
-                '\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u0646\u062A\u062C\u0627\u062A \u0641\u064A \u0627\u0644\u0633\u0644\u0629',
-              );
+              buildSnackBar(context, l10n.noItemsInCart);
             }
           },
-          text:
-              '\u0627\u0644\u062F\u0641\u0639 ${context.watch<CartCubit>().cartEntity.calculateTotalPrice()} \u062C\u0646\u064A\u0647',
+          text: l10n.paymentButton(
+            context.watch<CartCubit>().cartEntity.calculateTotalPrice().toString(),
+          ),
         );
       },
     );

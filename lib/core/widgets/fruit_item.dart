@@ -5,6 +5,7 @@ import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class FruitItem extends StatelessWidget {
   const FruitItem({super.key, required this.productEntity, this.onTap});
@@ -14,6 +15,8 @@ class FruitItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -92,14 +95,15 @@ class FruitItem extends StatelessWidget {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                      text:
-                                          '${productEntity.price.toStringAsFixed(0)} جنيه',
+                                      text: l10n.priceWithCurrency(
+                                        productEntity.price.toStringAsFixed(0),
+                                      ),
                                       style: TextStyles.bold13.copyWith(
                                         color: AppColors.secondaryColor,
                                       ),
                                     ),
                                     TextSpan(
-                                      text: ' / الكيلو',
+                                      text: l10n.perKiloSuffix,
                                       style: TextStyles.semiBold13.copyWith(
                                         color: AppColors.lightSecondaryColor,
                                       ),

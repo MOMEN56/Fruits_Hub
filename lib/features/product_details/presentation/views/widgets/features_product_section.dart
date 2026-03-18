@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fruit_hub/core/entities/product_entity.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 import 'package:fruit_hub/features/product_details/presentation/views/widgets/feature_product_container.dart';
 
 class FeaturesProductSection extends StatelessWidget {
@@ -11,6 +12,8 @@ class FeaturesProductSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final hasTwoColumns = constraints.maxWidth >= 280;
@@ -23,26 +26,26 @@ class FeaturesProductSection extends StatelessWidget {
           children: [
             FeatureProductContainer(
               width: itemWidth,
-              title: '${productEntity.expirationsMonths} يوم',
-              subtitle: 'الصلاحيه',
+              title: l10n.days(productEntity.expirationsMonths.toString()),
+              subtitle: l10n.expiry,
               icon: SvgPicture.asset(Assets.assetsImagesCalendar),
             ),
             FeatureProductContainer(
               width: itemWidth,
               title: '100%',
-              subtitle: 'اوجانيك',
+              subtitle: l10n.organic,
               icon: SvgPicture.asset(Assets.assetsImagesHand),
             ),
             FeatureProductContainer(
               width: itemWidth,
-              title: '${productEntity.numberOfCalories} كالوري',
-              subtitle: '${productEntity.unitAmount} جرام',
+              title: l10n.calories(productEntity.numberOfCalories.toString()),
+              subtitle: l10n.grams(productEntity.unitAmount.toString()),
               icon: SvgPicture.asset(Assets.assetsImagesCalorie),
             ),
             FeatureProductContainer(
               width: itemWidth,
               title: '4.8',
-              subtitle: "التقييم",
+              subtitle: l10n.rating,
               icon: SvgPicture.asset(Assets.assetsImagesFavourites),
             ),
           ],

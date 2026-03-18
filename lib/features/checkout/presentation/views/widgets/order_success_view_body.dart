@@ -6,6 +6,7 @@ import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/animated_order_success_badge.dart';
 import 'package:fruit_hub/features/home/presentation/views/main_view.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class OrderSuccessViewBody extends StatelessWidget {
   const OrderSuccessViewBody({super.key, required this.orderId});
@@ -14,7 +15,9 @@ class OrderSuccessViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
     final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
+
     return SafeArea(
       top: false,
       child: Align(
@@ -41,14 +44,14 @@ class OrderSuccessViewBody extends StatelessWidget {
                           const AnimatedOrderSuccessBadge(),
                           const SizedBox(height: 28),
                           Text(
-                            'تم بنجاح !',
+                            l10n.completedSuccessfully,
                             style: TextStyles.bold23.copyWith(
                               color: const Color(0xFF0C0D0D),
                             ),
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'رقم الطلب: ${_formatOrderNumber(orderId)}',
+                            l10n.orderNumber(_formatOrderNumber(orderId)),
                             textAlign: TextAlign.center,
                             style: TextStyles.regular16.copyWith(
                               color: const Color(0xFF6C7475),
@@ -58,7 +61,7 @@ class OrderSuccessViewBody extends StatelessWidget {
                       ),
                       const Spacer(),
                       CustomButton(
-                        text: 'تتبع الطلب',
+                        text: l10n.trackOrder,
                         height: 56,
                         onPressed: () {
                           Navigator.of(context).pushNamedAndRemoveUntil(
@@ -77,7 +80,7 @@ class OrderSuccessViewBody extends StatelessWidget {
                           );
                         },
                         child: Text(
-                          'الرئيسية',
+                          l10n.home,
                           style: TextStyles.bold16.copyWith(
                             color: AppColors.primaryColor,
                             decoration: TextDecoration.underline,

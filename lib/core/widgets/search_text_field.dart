@@ -4,6 +4,7 @@ import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
 import 'package:fruit_hub/core/utils/products_sort_option.dart';
 import 'package:fruit_hub/core/widgets/products_sort_bottom_sheet.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class SearchTextField extends StatelessWidget {
   const SearchTextField({
@@ -21,6 +22,7 @@ class SearchTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
     final isSortActive = selectedSortOption != ProductsSortOption.none;
 
     return Container(
@@ -75,7 +77,7 @@ class SearchTextField extends StatelessWidget {
             ),
           ),
           hintStyle: TextStyles.regular13.copyWith(color: const Color(0xFF949D9E)),
-          hintText: 'ابحث عن...',
+          hintText: l10n.searchHint,
           contentPadding: const EdgeInsets.symmetric(vertical: 18),
           filled: true,
           fillColor: const Color(0xFFF9FAFA),

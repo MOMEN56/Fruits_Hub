@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class ShippingItem extends StatelessWidget {
   const ShippingItem({
@@ -20,6 +21,8 @@ class ShippingItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -65,7 +68,7 @@ class ShippingItem extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.right,
                       style: TextStyles.regular13.copyWith(
-                        color: Colors.black.withOpacity(.5),
+                        color: Colors.black.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -78,7 +81,7 @@ class ShippingItem extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerRight,
                   child: Text(
-                    '$price جنيه',
+                    l10n.priceWithCurrency(price),
                     style: TextStyles.bold13.copyWith(
                       color: AppColors.lightPrimaryColor,
                     ),

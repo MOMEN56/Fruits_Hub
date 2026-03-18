@@ -3,6 +3,7 @@ import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/user_order_product_entity.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class OrderProductTile extends StatelessWidget {
   const OrderProductTile({super.key, required this.product});
@@ -11,6 +12,8 @@ class OrderProductTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -34,7 +37,7 @@ class OrderProductTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'كود: ${product.code.isEmpty ? '--' : product.code}',
+                  l10n.codeLabel(product.code.isEmpty ? '--' : product.code),
                   style: TextStyles.regular11.copyWith(
                     color: const Color(0xFF70807B),
                   ),
@@ -52,7 +55,7 @@ class OrderProductTile extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        'الكمية: ${product.quantity}',
+                        l10n.quantityLabel(product.quantity),
                         style: TextStyles.semiBold11.copyWith(
                           color: AppColors.primaryColor,
                         ),
@@ -60,7 +63,9 @@ class OrderProductTile extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      '${(product.price * product.quantity).toStringAsFixed(2)} جنيه',
+                      l10n.priceWithCurrency(
+                        (product.price * product.quantity).toStringAsFixed(2),
+                      ),
                       style: TextStyles.bold13.copyWith(
                         color: AppColors.secondaryColor,
                       ),

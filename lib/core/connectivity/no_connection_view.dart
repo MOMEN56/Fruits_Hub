@@ -3,6 +3,7 @@ import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
 import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class NoConnectionView extends StatelessWidget {
   const NoConnectionView({
@@ -18,6 +19,7 @@ class NoConnectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
     final screenWidth = MediaQuery.sizeOf(context).width;
     final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
     final imageWidth = (screenWidth * 0.52).clamp(180.0, 260.0).toDouble();
@@ -51,8 +53,7 @@ class NoConnectionView extends StatelessWidget {
             if (onRetry != null) ...[
               const SizedBox(height: 24),
               CustomButton(
-                text:
-                    '\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629',
+                text: l10n.retry,
                 width: (screenWidth * 0.6).clamp(180.0, 260.0).toDouble(),
                 onPressed: onRetry!,
               ),

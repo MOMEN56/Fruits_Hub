@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/products_sort_option.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 Future<void> showProductsSortBottomSheet({
   required BuildContext context,
@@ -14,6 +15,8 @@ Future<void> showProductsSortBottomSheet({
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
     builder: (context) {
+      final l10n = S.of(context);
+
       return SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
@@ -22,7 +25,7 @@ Future<void> showProductsSortBottomSheet({
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'ترتيب المنتجات',
+                l10n.sortProducts,
                 style: TextStyles.bold16.copyWith(color: const Color(0xFF0C0D0D)),
               ),
               const SizedBox(height: 12),

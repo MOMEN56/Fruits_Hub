@@ -1,5 +1,6 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 enum AppSnackBarType { success, error }
 
@@ -34,7 +35,7 @@ void buildSnackBar(
 
 String _defaultTitle(AppSnackBarType type) {
   return switch (type) {
-    AppSnackBarType.error => '\u062E\u0637\u0623',
-    AppSnackBarType.success => '\u062A\u0645 \u0628\u0646\u062C\u0627\u062D',
+    AppSnackBarType.error => S.current.titleError,
+    AppSnackBarType.success => S.current.titleSuccess,
   };
 }

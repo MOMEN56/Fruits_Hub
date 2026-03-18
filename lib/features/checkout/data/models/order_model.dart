@@ -1,6 +1,7 @@
 import 'package:fruit_hub/features/checkout/data/models/order_product_model.dart';
-import 'package:fruit_hub/features/checkout/data/models/shipping_Address_model.dart';
+import 'package:fruit_hub/features/checkout/data/models/shipping_address_model.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 import 'package:uuid/uuid.dart';
 
 class OrderModel {
@@ -10,6 +11,7 @@ class OrderModel {
   final List<OrderProductModel> orderProducts;
   final String paymentMethod;
   final String orderId;
+
   OrderModel({
     required this.totalPrice,
     required this.uId,
@@ -23,7 +25,7 @@ class OrderModel {
     return OrderModel(
       orderId: const Uuid().v4(),
       totalPrice: orderEntity.cartEntity.calculateTotalPrice(),
-      uId: orderEntity.uID,
+      uId: orderEntity.userId,
       shippingAddressModel: ShippingAddressModel.fromEntity(
         orderEntity.shippingAddressEntity,
       ),
@@ -31,9 +33,11 @@ class OrderModel {
           orderEntity.cartEntity.cartItems
               .map((e) => OrderProductModel.fromEntity(cartItemEntity: e))
               .toList(),
-      paymentMethod: orderEntity.payWithCash! ? 'كاش' : 'اونلاين',
+      paymentMethod:
+          orderEntity.payWithCash! ? S.current.cashLabel : S.current.onlineLabel,
     );
   }
+
   toJson() => {
     'order_id': orderId,
     'total_price': totalPrice,
@@ -45,5 +49,3 @@ class OrderModel {
     'payment_method': paymentMethod,
   };
 }
-
-// payment method

@@ -3,6 +3,7 @@ import 'package:fruit_hub/core/entities/product_entity.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/widgets/quantity_selector.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class ProductInfoSection extends StatelessWidget {
   const ProductInfoSection({
@@ -20,6 +21,7 @@ class ProductInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
     final quantityScale = MediaQuery.sizeOf(context).width < 380 ? 1.0 : 1.12;
 
     return Column(
@@ -43,7 +45,7 @@ class ProductInfoSection extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerRight,
                     child: Text(
-                      '${productEntity.price.toStringAsFixed(0)} جنيه / الكيلو',
+                      l10n.pricePerKilo(productEntity.price.toStringAsFixed(0)),
                       textAlign: TextAlign.right,
                       style: TextStyles.bold13.copyWith(
                         color: AppColors.secondaryColor,
@@ -67,7 +69,7 @@ class ProductInfoSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text(
-              'المراجعة',
+              l10n.review,
               style: TextStyles.bold13.copyWith(
                 color: const Color(0xFF1B5E37),
                 decoration: TextDecoration.underline,

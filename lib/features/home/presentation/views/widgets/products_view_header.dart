@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class ProductsViewHeader extends StatelessWidget {
   const ProductsViewHeader({
@@ -18,10 +19,12 @@ class ProductsViewHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return Row(
       children: [
         Text(
-          '$productsLength نتائج',
+          l10n.resultsCount(productsLength),
           textAlign: TextAlign.right,
           style: TextStyles.bold16,
         ),
@@ -37,7 +40,7 @@ class ProductsViewHeader extends StatelessWidget {
                   width: 1,
                   color:
                       isSortActive
-                          ? AppColors.primaryColor.withOpacity(0.35)
+                          ? AppColors.primaryColor.withValues(alpha: 0.35)
                           : const Color(0x66CACECE),
                 ),
                 borderRadius: BorderRadius.circular(4),

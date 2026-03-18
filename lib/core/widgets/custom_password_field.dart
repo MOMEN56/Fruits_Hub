@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/widgets/custom_text_field.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class CustomPasswordField extends StatefulWidget {
   const CustomPasswordField({super.key, this.onSaved});
@@ -11,12 +12,13 @@ class CustomPasswordField extends StatefulWidget {
 
 class _CustomPasswordFieldState extends State<CustomPasswordField> {
   bool obscureText = true;
+
   @override
   Widget build(BuildContext context) {
     return CustomTextFormField(
       onSaved: widget.onSaved,
       obscureText: obscureText,
-      hintText: 'كلمة المرور',
+      hintText: S.of(context).passwordHint,
       textInputType: TextInputType.visiblePassword,
       suffixIcon: GestureDetector(
         onTap: () {

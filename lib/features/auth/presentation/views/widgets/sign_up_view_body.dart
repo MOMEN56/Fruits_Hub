@@ -8,6 +8,7 @@ import 'package:fruit_hub/core/widgets/custom_text_field.dart';
 import 'package:fruit_hub/features/auth/presentation/cubits/singup_cubit/cubit/signup_cubit.dart';
 import 'package:fruit_hub/features/auth/presentation/views/widgets/is_have_account_widget.dart';
 import 'package:fruit_hub/features/auth/presentation/views/widgets/terms_and_conditions.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class SignUpViewBody extends StatefulWidget {
   const SignUpViewBody({super.key});
@@ -24,6 +25,7 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
     final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
 
     return Align(
@@ -43,7 +45,7 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
                     onSaved: (value) {
                       userName = value!;
                     },
-                    hintText: 'الاسم كامل',
+                    hintText: l10n.fullNameHint,
                     textInputType: TextInputType.name,
                   ),
                   const SizedBox(height: 16),
@@ -51,7 +53,7 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
                     onSaved: (value) {
                       email = value!;
                     },
-                    hintText: 'البريد الإلكتروني',
+                    hintText: l10n.emailHint,
                     textInputType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 16),
@@ -80,10 +82,7 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
                                 userName,
                               );
                         } else {
-                          buildSnackBar(
-                            context,
-                            "يجب الموافقة على الشروط والاحكام",
-                          );
+                          buildSnackBar(context, l10n.mustAcceptTerms);
                         }
                       } else {
                         setState(() {
@@ -91,12 +90,12 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
                         });
                       }
                     },
-                    text: "إنشاء حساب",
+                    text: l10n.createAccount,
                   ),
                   const SizedBox(height: 26),
                   IsHaveAnAccountWidget(
-                    text1: "تمتلك حساب بالفعل؟",
-                    text2: "تسجيل دخول",
+                    text1: l10n.alreadyHaveAccount,
+                    text2: l10n.signIn,
                     onTap: () {
                       Navigator.pop(context);
                     },

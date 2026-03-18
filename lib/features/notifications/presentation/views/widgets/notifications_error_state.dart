@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class NotificationsErrorState extends StatelessWidget {
   const NotificationsErrorState({
@@ -18,7 +19,10 @@ class NotificationsErrorState extends StatelessWidget {
         children: [
           Text(message),
           const SizedBox(height: 8),
-          TextButton(onPressed: onRetry, child: const Text('إعادة المحاولة')),
+          TextButton(
+            onPressed: onRetry,
+            child: Text(S.of(context).retry),
+          ),
         ],
       ),
     );

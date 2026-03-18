@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
+import 'package:fruit_hub/core/utils/widgets/custom_network_image.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/user_order_entity.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_status_badge.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_ui_mapper.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class UserOrderCard extends StatelessWidget {
   const UserOrderCard({super.key, required this.order, this.onTap});
@@ -13,6 +14,8 @@ class UserOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -38,7 +41,7 @@ class UserOrderCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'طلب #${shortOrderId(order.orderId)}',
+                          l10n.orderLabel(shortOrderId(order.orderId)),
                           style: TextStyles.bold16,
                         ),
                         const SizedBox(height: 4),
@@ -64,7 +67,7 @@ class UserOrderCard extends StatelessWidget {
                 children: [
                   _OrderMetaChip(
                     icon: Icons.shopping_bag_outlined,
-                    label: '${order.itemsCount} منتج',
+                    label: l10n.orderItemsCount(order.itemsCount),
                   ),
                   _OrderMetaChip(
                     icon: Icons.payments_outlined,
@@ -72,7 +75,9 @@ class UserOrderCard extends StatelessWidget {
                   ),
                   _OrderMetaChip(
                     icon: Icons.attach_money,
-                    label: '${order.totalPrice.toStringAsFixed(2)} جنيه',
+                    label: l10n.priceWithCurrency(
+                      order.totalPrice.toStringAsFixed(2),
+                    ),
                   ),
                   if (order.createdAt != null)
                     _OrderMetaChip(
@@ -94,7 +99,7 @@ class UserOrderCard extends StatelessWidget {
   String _productLabel() {
     final firstProductName = order.firstProductName?.trim();
     if (firstProductName == null || firstProductName.isEmpty) {
-      return 'منتجات الطلب';
+      return S.current.orderProducts;
     }
     if (order.itemsCount <= 1) return firstProductName;
     return '$firstProductName +${order.itemsCount - 1}';

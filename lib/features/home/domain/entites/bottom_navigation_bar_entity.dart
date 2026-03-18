@@ -1,4 +1,5 @@
 import 'package:fruit_hub/core/utils/assets.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class BottomNavigationBarEntity {
   final String activeImage, inActiveImage;
@@ -15,21 +16,21 @@ List<BottomNavigationBarEntity> get bottomNavigationBarItems => [
   BottomNavigationBarEntity(
     activeImage: Assets.assetsImagesHomeActive,
     inActiveImage: Assets.assetsImagesHome,
-    name: 'الرئيسية',
+    name: S.current.home,
   ),
   BottomNavigationBarEntity(
     activeImage: Assets.assetsImagesProductActive,
     inActiveImage: Assets.assetsImagesProducts,
-    name: 'المنتجات',
+    name: S.current.products,
   ),
   BottomNavigationBarEntity(
     activeImage: Assets.assetsImagesShoppingCartActive,
     inActiveImage: Assets.assetsImagesShoppingCart,
-    name: 'سلة التسوق',
+    name: S.current.cart,
   ),
   BottomNavigationBarEntity(
     activeImage: Assets.assetsImagesUserActive,
     inActiveImage: Assets.assetsImagesUser,
-    name: 'طلباتي',
+    name: S.current.myOrders,
   ),
 ];

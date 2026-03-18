@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/features/home/presentation/views/main_view.dart';
 import 'package:fruit_hub/features/notifications/presentation/manger/notifications_cubit/notifications_cubit.dart';
@@ -7,6 +7,7 @@ import 'package:fruit_hub/features/notifications/presentation/views/notification
 import 'package:fruit_hub/features/notifications/presentation/views/widgets/highlighted_order_banner.dart';
 import 'package:fruit_hub/features/notifications/presentation/views/widgets/notification_card.dart';
 import 'package:fruit_hub/features/notifications/presentation/views/widgets/notifications_error_state.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class NotificationsViewBody extends StatefulWidget {
   const NotificationsViewBody({super.key, required this.args});
@@ -52,7 +53,7 @@ class _NotificationsViewBodyState extends State<NotificationsViewBody> {
                 }
                 if (state is NotificationsSuccess) {
                   if (state.notifications.isEmpty) {
-                    return const Center(child: Text('لا توجد إشعارات حالياً'));
+                    return Center(child: Text(S.of(context).noNotificationsCurrently));
                   }
                   return RefreshIndicator(
                     onRefresh: () => context.read<NotificationsCubit>().refresh(),
@@ -67,9 +68,8 @@ class _NotificationsViewBodyState extends State<NotificationsViewBody> {
                           onTap: () => context
                               .read<NotificationsCubit>()
                               .markAsRead(notificationId: notification.id),
-                          onOpenOrders: notification.orderId == null
-                              ? null
-                              : _openOrdersTab,
+                          onOpenOrders:
+                              notification.orderId == null ? null : _openOrdersTab,
                         );
                       },
                     ),

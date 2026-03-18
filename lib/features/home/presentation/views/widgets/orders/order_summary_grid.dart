@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/user_order_entity.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_ui_mapper.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class OrderSummaryGrid extends StatelessWidget {
   const OrderSummaryGrid({super.key, required this.order});
@@ -10,6 +11,8 @@ class OrderSummaryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final hasTwoColumns = constraints.maxWidth >= 280;
@@ -22,28 +25,28 @@ class OrderSummaryGrid extends StatelessWidget {
           children: [
             _SummaryCard(
               width: cardWidth,
-              title: 'الإجمالي',
-              value: '${order.totalPrice.toStringAsFixed(2)} جنيه',
+              title: l10n.overallTotal,
+              value: l10n.priceWithCurrency(order.totalPrice.toStringAsFixed(2)),
               icon: Icons.payments_outlined,
               accent: const Color(0xFFEAF7EE),
             ),
             _SummaryCard(
               width: cardWidth,
-              title: 'طريقة الدفع',
+              title: l10n.paymentMethod,
               value: paymentMethodLabel(order.paymentMethod),
               icon: Icons.credit_card_outlined,
               accent: const Color(0xFFFFF2E0),
             ),
             _SummaryCard(
               width: cardWidth,
-              title: 'عدد المنتجات',
+              title: l10n.productsCount,
               value: '${order.itemsCount}',
               icon: Icons.inventory_2_outlined,
               accent: const Color(0xFFE9F1FF),
             ),
             _SummaryCard(
               width: cardWidth,
-              title: 'تاريخ الطلب',
+              title: l10n.orderDate,
               value: order.createdAt != null ? formatOrderDate(order.createdAt!) : '--',
               icon: Icons.schedule,
               accent: const Color(0xFFF1ECFF),

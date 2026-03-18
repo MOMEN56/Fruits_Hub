@@ -6,6 +6,7 @@ import 'package:fruit_hub/core/services/git_it_services.dart';
 import 'package:fruit_hub/core/widgets/custom_app_bar.dart';
 import 'package:fruit_hub/features/best_selling/presentation/view/widgets/best_selling_view_body.dart';
 import 'package:fruit_hub/features/home/presentation/views/main_view.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class BestSellingView extends StatelessWidget {
   const BestSellingView({super.key});
@@ -19,8 +20,7 @@ class BestSellingView extends StatelessWidget {
       child: Scaffold(
         appBar: buildAppBar(
           context,
-          title:
-              '\u0627\u0644\u0623\u0643\u062B\u0631 \u0645\u0628\u064A\u0639\u064B\u0627',
+          title: S.of(context).mostSelling,
           onBackPressed: () {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();

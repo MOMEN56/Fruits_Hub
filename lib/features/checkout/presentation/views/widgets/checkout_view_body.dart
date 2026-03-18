@@ -3,11 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
 import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
+import 'package:fruit_hub/features/checkout/domain/entites/shipping_address_entity.dart';
+import 'package:fruit_hub/features/checkout/presentation/cubits/checkout/checkout_cubit.dart';
 import 'package:fruit_hub/features/checkout/presentation/manger/cubit/add_order_cubit_cubit.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_steps.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_steps_page_view.dart';
-import 'package:provider/provider.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class CheckoutViewBody extends StatefulWidget {
   const CheckoutViewBody({super.key});
@@ -17,137 +18,159 @@ class CheckoutViewBody extends StatefulWidget {
 }
 
 class _CheckoutViewBodyState extends State<CheckoutViewBody> {
-  late PageController pageController;
-  final ValueNotifier<AutovalidateMode> valueNotifier = ValueNotifier(
-    AutovalidateMode.disabled,
-  );
-  int currentPageIndex = 0;
+  late final PageController _pageController;
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _addressController;
+  late final TextEditingController _cityController;
+  late final TextEditingController _floorController;
+  late final TextEditingController _phoneController;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    pageController = PageController();
-    pageController.addListener(() {
-      setState(() {
-        currentPageIndex = pageController.page!.round();
-      });
-    });
     super.initState();
+    _pageController = PageController();
+
+    final shippingAddress =
+        context.read<CheckoutCubit>().state.orderInput.shippingAddressEntity;
+    _nameController = TextEditingController(text: shippingAddress.name ?? '');
+    _emailController = TextEditingController(text: shippingAddress.email ?? '');
+    _addressController = TextEditingController(
+      text: shippingAddress.address ?? '',
+    );
+    _cityController = TextEditingController(text: shippingAddress.city ?? '');
+    _floorController = TextEditingController(text: shippingAddress.floor ?? '');
+    _phoneController = TextEditingController(text: shippingAddress.phone ?? '');
   }
 
   @override
   void dispose() {
-    pageController.dispose();
-    valueNotifier.dispose();
+    _pageController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
+    _cityController.dispose();
+    _floorController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final checkoutState = context.watch<CheckoutCubit>().state;
     final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
     final topSpacing = ResponsiveLayout.isMobile(context) ? 20.0 : 28.0;
 
-    return Align(
-      alignment: Alignment.topCenter,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 900),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          child: Column(
-            children: [
-              SizedBox(height: topSpacing),
-              CheckoutSteps(
-                onTap: (index) {
-                  if (index < currentPageIndex) {
-                    pageController.animateToPage(
-                      index,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  } else if (index == currentPageIndex) {
-                    return;
-                  } else {
-                    if (currentPageIndex == 0) {
-                      if (context.read<OrderInputEntity>().payWithCash != null) {
-                        pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      } else {
-                        buildSnackBar(context, 'يرجى تحديد طريقة الدفع');
-                      }
-                    } else if (currentPageIndex == 1) {
-                      _handleAddressValidation();
-                    }
-                  }
-                },
-                pageController: pageController,
-                currentPageIndex: currentPageIndex,
-              ),
-              Expanded(
-                child: CheckoutStepsPageView(
-                  valueListenable: valueNotifier,
-                  pageController: pageController,
-                  formKey: _formKey,
+    return BlocListener<CheckoutCubit, CheckoutState>(
+      listenWhen:
+          (previous, current) =>
+              previous.currentStepIndex != current.currentStepIndex,
+      listener: (_, state) {
+        _pageController.animateToPage(
+          state.currentStepIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      },
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 900),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            child: Column(
+              children: [
+                SizedBox(height: topSpacing),
+                CheckoutSteps(
+                  onTap: _handleStepTapped,
+                  currentPageIndex: checkoutState.currentStepIndex,
                 ),
-              ),
-              CustomButton(
-                onPressed: () {
-                  if (currentPageIndex == 0) {
-                    _handleShippingSectionValidation(context);
-                  } else if (currentPageIndex == 1) {
-                    _handleAddressValidation();
-                  } else {
-                    context.read<AddOrderCubit>().submitOrder(
-                      order: context.read<OrderInputEntity>(),
-                    );
-                  }
-                },
-                text: getNextButtonText(currentPageIndex),
-              ),
-              const SizedBox(height: 32),
-            ],
+                Expanded(
+                  child: CheckoutStepsPageView(
+                    addressAutovalidateMode:
+                        checkoutState.addressAutovalidateMode,
+                    addressController: _addressController,
+                    cityController: _cityController,
+                    emailController: _emailController,
+                    floorController: _floorController,
+                    formKey: _formKey,
+                    nameController: _nameController,
+                    pageController: _pageController,
+                    phoneController: _phoneController,
+                  ),
+                ),
+                CustomButton(
+                  onPressed: _handlePrimaryAction,
+                  text: checkoutState.nextButtonText,
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _handleShippingSectionValidation(BuildContext context) {
-    if (context.read<OrderInputEntity>().payWithCash != null) {
-      pageController.animateToPage(
-        currentPageIndex + 1,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.bounceIn,
-      );
-    } else {
-      buildSnackBar(context, 'يرجى تحديد طريقة الدفع');
+  void _handleStepTapped(int targetStepIndex) {
+    final checkoutCubit = context.read<CheckoutCubit>();
+    final currentStepIndex = checkoutCubit.state.currentStepIndex;
+
+    if (targetStepIndex < currentStepIndex) {
+      checkoutCubit.moveToStep(targetStepIndex);
+      return;
     }
+
+    if (targetStepIndex == currentStepIndex) {
+      return;
+    }
+
+    _handlePrimaryAction();
   }
 
-  String getNextButtonText(int currentPageIndex) {
-    final orderEntity = context.read<OrderInputEntity>();
-    switch (currentPageIndex) {
+  void _handlePrimaryAction() {
+    switch (context.read<CheckoutCubit>().state.currentStepIndex) {
       case 0:
+        _continueFromShippingStep();
+        return;
       case 1:
-        return 'التالي';
+        _continueFromAddressStep();
+        return;
       case 2:
-        return orderEntity.payWithCash == true ? 'تأكيد الطلب' : "الدفع";
-      default:
-        return 'التالي';
+        context.read<AddOrderCubit>().submitOrder(
+          order: context.read<CheckoutCubit>().state.orderInput,
+        );
+        return;
     }
   }
 
-  void _handleAddressValidation() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      pageController.animateToPage(
-        currentPageIndex + 1,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.bounceIn,
-      );
-    } else {
-      valueNotifier.value = AutovalidateMode.always;
+  void _continueFromShippingStep() {
+    final checkoutCubit = context.read<CheckoutCubit>();
+    if (!checkoutCubit.state.canContinueFromShipping) {
+      buildSnackBar(context, S.of(context).pleaseSelectPaymentMethod);
+      return;
     }
+
+    checkoutCubit.moveToNextStep();
+  }
+
+  void _continueFromAddressStep() {
+    if (!_formKey.currentState!.validate()) {
+      context.read<CheckoutCubit>().enableAddressAutovalidate();
+      return;
+    }
+
+    context.read<CheckoutCubit>().saveShippingAddress(
+      ShippingAddressEntity(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        address: _addressController.text.trim(),
+        city: _cityController.text.trim(),
+        floor: _floorController.text.trim(),
+        phone: _phoneController.text.trim(),
+      ),
+    );
+    context.read<CheckoutCubit>().moveToNextStep();
   }
 }

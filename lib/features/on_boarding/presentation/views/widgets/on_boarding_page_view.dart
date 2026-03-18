@@ -3,6 +3,7 @@ import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
 import 'package:fruit_hub/features/on_boarding/presentation/views/widgets/on_boarding_page_view_item.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class OnBoardingPageView extends StatelessWidget {
   const OnBoardingPageView({super.key, required this.pageController});
@@ -10,6 +11,8 @@ class OnBoardingPageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return PageView(
       controller: pageController,
       children: [
@@ -20,7 +23,7 @@ class OnBoardingPageView extends StatelessWidget {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('مرحبًا بك في', style: TextStyles.bold23),
+              Text(l10n.welcomeTo, style: TextStyles.bold23),
               Text(
                 '  HUB',
                 style: TextStyles.bold23.copyWith(color: AppColors.secondaryColor),
@@ -31,19 +34,17 @@ class OnBoardingPageView extends StatelessWidget {
               ),
             ],
           ),
-          subtitle:
-              'اكتشف تجربة تسوق فريدة مع FruitHUB. استكشف مجموعتنا الواسعة من الفواكه الطازجة الممتازة واحصل على أفضل العروض والجودة العالية.',
+          subtitle: l10n.onboardingDiscoverSubtitle,
         ),
         OnBoardingPageViewItem(
           isVisible: false,
           image: Assets.assetsImagesOnBoardingPage2ViewItem,
           backgroundimage: Assets.assetsImagesOnBoardingPage2ViewItemBackground,
-          subtitle:
-              'نقدم لك أفضل الفواكه المختارة بعناية. اطلع على التفاصيل والصور والتقييمات لتتأكد من اختيار الفاكهة المثالية',
-          title: const Text(
-            'ابحث وتسوق',
+          subtitle: l10n.onboardingCuratedSubtitle,
+          title: Text(
+            l10n.searchAndShop,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: Color(0xFF0C0D0D),
               fontSize: 23,
               fontFamily: 'Cairo',

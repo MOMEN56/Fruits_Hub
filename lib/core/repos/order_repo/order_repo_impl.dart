@@ -10,11 +10,13 @@ import 'package:fruit_hub/core/utils/backend_endpoints.dart';
 import 'package:fruit_hub/features/checkout/data/models/order_model.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
 import 'package:fruit_hub/features/checkout/domain/entites/user_order_entity.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class OrderRepoImpl implements OrderRepo {
   final DatabaseService fireStoreService;
 
   OrderRepoImpl(this.fireStoreService);
+
   @override
   Future<Either<Failure, String>> addOrder({
     required OrderInputEntity order,
@@ -30,10 +32,8 @@ class OrderRepoImpl implements OrderRepo {
           path: BackendEndpoint.notifications,
           data: {
             'type': 'order_status',
-            'title_ar':
-                '\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0637\u0644\u0628',
-            'message_ar':
-                '\u064A\u062A\u0645 \u0627\u0644\u0645\u0631\u0627\u062C\u0639\u0629',
+            'title_ar': S.current.orderUpdate,
+            'message_ar': S.current.pendingReview,
             'status': 'pending',
             'user_id': orderModel.uId,
             'order_id': orderModel.orderId,
@@ -45,8 +45,8 @@ class OrderRepoImpl implements OrderRepo {
           path: BackendEndpoint.notifications,
           data: {
             'type': 'new_order',
-            'title_ar': 'طلب جديد',
-            'message_ar': 'قام عميل بإنشاء طلب جديد',
+            'title_ar': S.current.newOrder,
+            'message_ar': S.current.customerCreatedNewOrder,
             'status': 'pending',
             'user_id': BackendEndpoint.adminNotificationsUserId,
             'order_id': orderModel.orderId,
@@ -54,9 +54,7 @@ class OrderRepoImpl implements OrderRepo {
             'created_at': DateTime.now().toUtc().toIso8601String(),
           },
         );
-      } catch (_) {
-        // Order creation should not fail if notification insert fails.
-      }
+      } catch (_) {}
       await _tryNotifyUserAboutOrderCreated(
         userId: orderModel.uId,
         orderId: orderModel.orderId,
@@ -316,10 +314,8 @@ class OrderRepoImpl implements OrderRepo {
           'user_id': userId,
           'order_id': orderId,
           'status': 'pending',
-          'title_ar':
-              '\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0637\u0644\u0628',
-          'message_ar':
-              '\u064A\u062A\u0645 \u0627\u0644\u0645\u0631\u0627\u062C\u0639\u0629',
+          'title_ar': S.current.orderUpdate,
+          'message_ar': S.current.pendingReview,
         },
       );
       log('[Push] User order-created response: ${response.data}');
@@ -328,7 +324,6 @@ class OrderRepoImpl implements OrderRepo {
         '[Push] User order-created notification failed: $e',
         stackTrace: stackTrace,
       );
-      // Push send is best-effort to avoid blocking checkout.
     }
   }
 
@@ -348,8 +343,8 @@ class OrderRepoImpl implements OrderRepo {
           'user_id': BackendEndpoint.adminNotificationsUserId,
           'order_id': orderId,
           'status': 'pending',
-          'title_ar': 'طلب جديد',
-          'message_ar': 'قام عميل بإنشاء طلب جديد',
+          'title_ar': S.current.newOrder,
+          'message_ar': S.current.customerCreatedNewOrder,
         },
       );
       log('[Push] Dashboard new-order response: ${response.data}');
@@ -358,7 +353,6 @@ class OrderRepoImpl implements OrderRepo {
         '[Push] Dashboard new-order notification failed: $e',
         stackTrace: stackTrace,
       );
-      // Push send is best-effort to avoid blocking checkout.
     }
   }
 }

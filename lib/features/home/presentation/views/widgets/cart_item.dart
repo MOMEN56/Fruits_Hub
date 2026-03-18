@@ -9,6 +9,7 @@ import 'package:fruit_hub/core/utils/widgets/quantity_selector.dart';
 import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_item_cubit/cubit/cart_item_cubit.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class CartItem extends StatelessWidget {
   const CartItem({super.key, required this.carItemEntity});
@@ -17,6 +18,7 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
     final quantityScale = MediaQuery.sizeOf(context).width < 380 ? 0.9 : 1.0;
 
     return BlocBuilder<CartItemCubit, CartItemState>(
@@ -66,7 +68,7 @@ class CartItem extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      '${carItemEntity.calculateTotalWeight()} جم',
+                      l10n.grams(carItemEntity.calculateTotalWeight().toString()),
                       textAlign: TextAlign.right,
                       style: TextStyles.regular13.copyWith(
                         color: AppColors.secondaryColor,
@@ -86,7 +88,11 @@ class CartItem extends StatelessWidget {
                               fit: BoxFit.scaleDown,
                               alignment: Alignment.centerRight,
                               child: Text(
-                                '${carItemEntity.calculateTotalPrice().toStringAsFixed(0)} جنيه',
+                                l10n.priceWithCurrency(
+                                  carItemEntity
+                                      .calculateTotalPrice()
+                                      .toStringAsFixed(0),
+                                ),
                                 style: TextStyles.bold16.copyWith(
                                   color: AppColors.secondaryColor,
                                 ),

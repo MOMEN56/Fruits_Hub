@@ -1,8 +1,9 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fruit_hub/core/errors/exceptions.dart';
-import 'dart:developer';
-
+import 'package:fruit_hub/generated/l10n.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthService {
@@ -32,29 +33,23 @@ class FirebaseAuthService {
       return credential.user!;
     } on FirebaseAuthException catch (e) {
       log(
-        "Exception in FirebaseAuthService.createUserWithEmailAndPassword: ${e.toString()} and code is ${e.code}",
+        'Exception in FirebaseAuthService.createUserWithEmailAndPassword: ${e.toString()} and code is ${e.code}',
       );
       if (e.code == 'weak-password') {
-        throw CustomException(message: 'الرقم السري ضعيف جداً.');
+        throw CustomException(message: S.current.weakPassword);
       } else if (e.code == 'email-already-in-use') {
-        throw CustomException(
-          message: 'لقد قمت بالتسجيل مسبقاً. الرجاء تسجيل الدخول.',
-        );
+        throw CustomException(message: S.current.emailAlreadyInUse);
       } else if (e.code == 'network-request-failed') {
-        throw CustomException(message: 'تاكد من اتصالك بالانترنت.');
+        throw CustomException(message: S.current.checkInternetConnection);
       } else {
-        throw CustomException(
-          message: 'لقد حدث خطأ ما. الرجاء المحاولة مرة اخرى.',
-        );
+        throw CustomException(message: S.current.genericTryAgain);
       }
     } catch (e) {
       log(
-        "Exception in FirebaseAuthService.createUserWithEmailAndPassword: ${e.toString()}",
+        'Exception in FirebaseAuthService.createUserWithEmailAndPassword: ${e.toString()}',
       );
 
-      throw CustomException(
-        message: 'لقد حدث خطأ ما. الرجاء المحاولة مرة اخرى.',
-      );
+      throw CustomException(message: S.current.genericTryAgain);
     }
   }
 
@@ -70,31 +65,23 @@ class FirebaseAuthService {
       return credential.user!;
     } on FirebaseAuthException catch (e) {
       log(
-        "Exception in FirebaseAuthService.signInWithEmailAndPassword: ${e.toString()} and code is ${e.code}",
+        'Exception in FirebaseAuthService.signInWithEmailAndPassword: ${e.toString()} and code is ${e.code}',
       );
       if (e.code == 'user-not-found') {
-        throw CustomException(
-          message: 'الرقم السري او البريد الالكتروني غير صحيح.',
-        );
+        throw CustomException(message: S.current.invalidCredentials);
       } else if (e.code == 'wrong-password') {
-        throw CustomException(
-          message: 'الرقم السري او البريد الالكتروني غير صحيح.',
-        );
+        throw CustomException(message: S.current.invalidCredentials);
       } else if (e.code == 'network-request-failed') {
-        throw CustomException(message: 'تاكد من اتصالك بالانترنت.');
+        throw CustomException(message: S.current.checkInternetConnection);
       } else {
-        throw CustomException(
-          message: 'لقد حدث خطأ ما. الرجاء المحاولة مرة اخرى.',
-        );
+        throw CustomException(message: S.current.genericTryAgain);
       }
     } catch (e) {
       log(
-        "Exception in FirebaseAuthService.signInWithEmailAndPassword: ${e.toString()}",
+        'Exception in FirebaseAuthService.signInWithEmailAndPassword: ${e.toString()}',
       );
 
-      throw CustomException(
-        message: 'لقد حدث خطأ ما. الرجاء المحاولة مرة اخرى.',
-      );
+      throw CustomException(message: S.current.genericTryAgain);
     }
   }
 

@@ -9,6 +9,7 @@ import 'package:fruit_hub/core/widgets/custom_app_bar.dart';
 import 'package:fruit_hub/core/widgets/products_sort_bottom_sheet.dart';
 import 'package:fruit_hub/core/widgets/search_text_field.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/products_view_header.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 import 'products_grid_view_bloc_builder.dart';
 
@@ -37,6 +38,7 @@ class _ProductsViewBodyState extends State<ProductsViewBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
     final productsCubit = context.watch<ProductsCubit>();
     final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
 
@@ -57,8 +59,7 @@ class _ProductsViewBodyState extends State<ProductsViewBody> {
                       const SizedBox(height: kTopPaddding),
                       buildAppBar(
                         context,
-                        title:
-                            '\u0627\u0644\u0645\u0646\u062A\u062C\u0627\u062A',
+                        title: l10n.products,
                         showBackButton: false,
                       ),
                       const SizedBox(height: 16),

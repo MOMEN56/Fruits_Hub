@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
+import 'package:fruit_hub/generated/l10n.dart';
 
 class OrdersEmptyState extends StatelessWidget {
   const OrdersEmptyState({super.key, required this.onRefresh});
@@ -9,6 +10,8 @@ class OrdersEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context);
+
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView(
@@ -38,10 +41,10 @@ class OrdersEmptyState extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 14),
-                Text('لا توجد طلبات حتى الآن', style: TextStyles.bold16),
+                Text(l10n.noOrdersYet, style: TextStyles.bold16),
                 const SizedBox(height: 8),
                 Text(
-                  'ابدأ بإضافة منتجات إلى السلة ثم أكمل الطلب، وستظهر جميع طلباتك هنا.',
+                  l10n.startAddingProducts,
                   textAlign: TextAlign.center,
                   style: TextStyles.regular13.copyWith(
                     color: const Color(0xFF6B7677),
@@ -50,7 +53,7 @@ class OrdersEmptyState extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'اسحب للأسفل للتحديث',
+                  l10n.pullDownToRefresh,
                   style: TextStyles.semiBold11.copyWith(
                     color: AppColors.primaryColor,
                   ),
