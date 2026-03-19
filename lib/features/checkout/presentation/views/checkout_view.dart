@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fruit_hub/core/repos/order_repo/order_repo.dart';
 import 'package:fruit_hub/core/services/current_user_service.dart';
-import 'package:fruit_hub/core/services/git_it_services.dart';
+import 'package:fruit_hub/core/services/get_it_services.dart';
 import 'package:fruit_hub/core/widgets/custom_app_bar.dart';
+import 'package:fruit_hub/features/checkout/domain/usecases/add_order_use_case.dart';
+import 'package:fruit_hub/features/checkout/presentation/cubits/add_order_cubit/add_order_cubit.dart';
 import 'package:fruit_hub/features/checkout/presentation/cubits/checkout/checkout_cubit.dart';
-import 'package:fruit_hub/features/checkout/presentation/manger/cubit/add_order_cubit_cubit.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/add_order_cubit_bloc_builder.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_view_body.dart';
 import 'package:fruit_hub/features/home/domain/entites/cart_entity.dart';
@@ -42,7 +42,7 @@ class _CheckoutViewState extends State<CheckoutView> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => AddOrderCubit(getIt<OrderRepo>())),
+        BlocProvider(create: (_) => AddOrderCubit(getIt<AddOrderUseCase>())),
         BlocProvider(
           create:
               (_) => CheckoutCubit(
