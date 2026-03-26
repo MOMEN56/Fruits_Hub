@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/shipping_address_entity.dart';
-import 'package:fruit_hub/features/home/domain/entites/cart_entity.dart';
+import 'package:fruit_hub/features/checkout/domain/entities/order_entity.dart';
+import 'package:fruit_hub/features/checkout/domain/entities/shipping_address_entity.dart';
+import 'package:fruit_hub/features/home/domain/entities/cart_entity.dart';
 import 'package:fruit_hub/generated/l10n.dart';
 import 'package:equatable/equatable.dart';
 

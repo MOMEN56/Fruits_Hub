@@ -100,17 +100,110 @@ class FirebaseAuthService {
   }
 
   Future<User> signinWithFacebook() async {
-    final LoginResult loginResult = await FacebookAuth.instance.login();
+    final loginResult = await FacebookAuth.instance.login(
+      permissions: ['email', 'public_profile'],
+    );
 
-    final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
+    if (loginResult.status != LoginStatus.success) {
+      throw CustomException(message: S.current.genericTryAgain);
+    }
 
-    return (await FirebaseAuth.instance.signInWithCredential(
-      facebookAuthCredential,
-    )).user!;
+    final OAuthCredential facebookCredential = FacebookAuthProvider.credential(
+      loginResult.accessToken!.tokenString,
+    );
+
+    try {
+      final credential = await FirebaseAuth.instance.signInWithCredential(
+        facebookCredential,
+      );
+      return credential.user!;
+    } on FirebaseAuthException catch (e) {
+      log(
+        'Exception in FirebaseAuthService.signinWithFacebook: ${e.code} ${e.message}',
+      );
+
+      if (e.code == 'account-exists-with-different-credential') {
+        final email = e.email ?? await _getFacebookEmail();
+        if (email == null)
+          throw CustomException(message: S.current.genericTryAgain);
+
+        // جيب الـ providers المرتبطة بالـ email ده
+        final methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(
+          email,
+        );
+
+        if (methods.contains('google.com')) {
+          // سجل دخول بـ Google الأول
+          final googleUser = await GoogleSignIn().signIn();
+          final googleAuth = await googleUser?.authentication;
+          final googleCredential = GoogleAuthProvider.credential(
+            accessToken: googleAuth?.accessToken,
+            idToken: googleAuth?.idToken,
+          );
+          final userCredential = await FirebaseAuth.instance
+              .signInWithCredential(googleCredential);
+
+          // ربط Facebook بالحساب
+          await userCredential.user?.linkWithCredential(facebookCredential);
+          return userCredential.user!;
+        } else if (methods.contains('password')) {
+          // الحساب بـ Email/Password — مش ممكن نعمل link تلقائي
+          // نعرض للمستخدم رسالة واضحة
+          throw CustomException(
+            message:
+                'هذا البريد مسجل بكلمة مرور. سجّل دخول بالبريد الإلكتروني أولاً.',
+          );
+        }
+      }
+      throw CustomException(message: S.current.genericTryAgain);
+    } catch (e) {
+      log('Exception in FirebaseAuthService.signinWithFacebook: $e');
+      throw CustomException(message: S.current.genericTryAgain);
+    }
   }
 
   bool isLoggedIn() {
     return FirebaseAuth.instance.currentUser != null;
+  }
+
+  Future<String?> _getFacebookEmail() async {
+    try {
+      final data = await FacebookAuth.instance.getUserData(fields: 'email');
+      return data['email'] as String?;
+    } catch (error) {
+      log('Failed to retrieve Facebook email: $error');
+      return null;
+    }
+  }
+
+  Future<String?> _getPrimaryProvider(String email) async {
+    try {
+      final methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(
+        email,
+      );
+      return methods.isNotEmpty ? methods.first : null;
+    } catch (error) {
+      log('Failed to fetch sign in methods for $email: $error');
+      return null;
+    }
+  }
+
+  String _buildProviderHint(String? providerId) {
+    if (providerId == null) return '';
+
+    final providerName = _providerDisplayName(providerId);
+    final hintText =
+        providerId == EmailAuthProvider.PROVIDER_ID
+            ? ' Please sign in with your email and password.'
+            : ' Please sign in with $providerName.';
+    return hintText;
+  }
+
+  String _providerDisplayName(String providerId) {
+    if (providerId == GoogleAuthProvider.PROVIDER_ID) return 'Google';
+    if (providerId == FacebookAuthProvider.PROVIDER_ID) return 'Facebook';
+    if (providerId == EmailAuthProvider.PROVIDER_ID)
+      return 'email and password';
+    return providerId;
   }
 }

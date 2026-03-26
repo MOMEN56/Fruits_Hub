@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fruit_hub/core/services/current_user_service.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/user_order_entity.dart';
+import 'package:fruit_hub/features/checkout/domain/entities/user_order_entity.dart';
 import 'package:fruit_hub/features/home/domain/usecases/get_user_orders_use_case.dart';
 import 'package:fruit_hub/generated/l10n.dart';
 

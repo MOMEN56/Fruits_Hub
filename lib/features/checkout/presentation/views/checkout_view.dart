@@ -8,7 +8,7 @@ import 'package:fruit_hub/features/checkout/presentation/cubits/add_order_cubit/
 import 'package:fruit_hub/features/checkout/presentation/cubits/checkout/checkout_cubit.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/add_order_cubit_bloc_builder.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_view_body.dart';
-import 'package:fruit_hub/features/home/domain/entites/cart_entity.dart';
+import 'package:fruit_hub/features/home/domain/entities/cart_entity.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
 import 'package:fruit_hub/generated/l10n.dart';
 

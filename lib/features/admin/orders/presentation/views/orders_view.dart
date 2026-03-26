@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
-import 'package:fruit_hub/features/orders/data/services/orders_service.dart';
-import 'package:fruit_hub/features/orders/domain/entities/dashboard_order_entity.dart';
-import 'package:fruit_hub/features/orders/presentation/manger/fetch_order/fetch_orders_cubit.dart';
-import 'package:fruit_hub/features/orders/presentation/manger/update_order/update_order_cubit.dart';
+import 'package:fruit_hub/features/admin/orders/data/services/orders_service.dart';
+import 'package:fruit_hub/features/admin/orders/domain/entities/dashboard_order_entity.dart';
+import 'package:fruit_hub/features/admin/orders/presentation/manager/fetch_order/fetch_orders_cubit.dart';
+import 'package:fruit_hub/features/admin/orders/presentation/manager/update_order/update_order_cubit.dart';
 
 class OrdersView extends StatefulWidget {
   const OrdersView({super.key});

@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:fruit_hub/core/utils/backend_endpoints.dart';
-import 'package:fruit_hub/features/orders/domain/entities/dashboard_order_entity.dart';
+import 'package:fruit_hub/features/admin/orders/domain/entities/dashboard_order_entity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OrdersService {

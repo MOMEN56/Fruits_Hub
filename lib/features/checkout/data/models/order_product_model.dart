@@ -1,4 +1,4 @@
-import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
+﻿import 'package:fruit_hub/features/auth/domain/entites/cart_item_entity.dart';
 
 class OrderProductModel {
   final String name;

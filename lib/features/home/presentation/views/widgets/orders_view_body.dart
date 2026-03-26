@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/connectivity/connection_gate.dart';
 import 'package:fruit_hub/core/repos/order_repo/order_repo.dart';
 import 'package:fruit_hub/core/services/current_user_service.dart';
-import 'package:fruit_hub/core/services/git_it_services.dart';
+import 'package:fruit_hub/core/services/get_it_services.dart';
 import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/widgets/custom_app_bar.dart';
 import 'package:fruit_hub/features/home/domain/usecases/get_user_orders_use_case.dart';
@@ -13,6 +14,8 @@ import 'package:fruit_hub/features/home/presentation/views/order_details_view.da
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/orders_empty_state.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/orders_error_state.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/user_order_card.dart';
+import 'package:fruit_hub/features/notifications/data/services/notifications_service.dart';
+import 'package:fruit_hub/features/notifications/domain/entities/notification_entity.dart';
 import 'package:fruit_hub/generated/l10n.dart';
 
 class OrdersViewBody extends StatelessWidget {
@@ -31,8 +34,57 @@ class OrdersViewBody extends StatelessWidget {
   }
 }
 
-class _OrdersViewBodyContent extends StatelessWidget {
+class _OrdersViewBodyContent extends StatefulWidget {
   const _OrdersViewBodyContent();
+
+  @override
+  State<_OrdersViewBodyContent> createState() => _OrdersViewBodyContentState();
+}
+
+class _OrdersViewBodyContentState extends State<_OrdersViewBodyContent> {
+  final NotificationsService _notificationsService = NotificationsService();
+  StreamSubscription<List<NotificationEntity>>? _subscription;
+  String? _lastSeenOrderStatusNotificationId;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final userId = getIt<CurrentUserService>().getCurrentUserId();
+    if (userId == null || userId.isEmpty) return;
+
+    _subscription = _notificationsService
+        .watchNotifications(userId: userId)
+        .listen((notifications) {
+      if (!mounted) return;
+
+      NotificationEntity? latestOrderStatus;
+      for (final n in notifications) {
+        if (n.type == 'order_status') {
+          latestOrderStatus = n;
+          break;
+        }
+      }
+
+      if (latestOrderStatus == null) return;
+
+      final latestId = latestOrderStatus.id.trim();
+      if (latestId.isEmpty) return;
+
+      if (latestId == _lastSeenOrderStatusNotificationId) return;
+      _lastSeenOrderStatusNotificationId = latestId;
+
+      // تحديث تلقائي لقائمة الطلبات عند وصول إشعار حالة طلب جديد.
+      context.read<UserOrdersCubit>().loadOrders();
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _notificationsService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +94,7 @@ class _OrdersViewBodyContent extends StatelessWidget {
     return ConnectionGate(
       hasUsableCache: state.hasUsableCache,
       onRetry: () => context.read<UserOrdersCubit>().loadOrders(),
+      hideChildWhenOffline: false,
       child: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(

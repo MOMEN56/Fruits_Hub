@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fruit_hub/core/connectivity/connection_cubit.dart';
-import 'package:fruit_hub/core/connectivity/connection_status.dart';
-
 class CustomNetworkImage extends StatelessWidget {
   const CustomNetworkImage({
     super.key,
@@ -35,28 +31,20 @@ class CustomNetworkImage extends StatelessWidget {
       );
     }
 
-    return BlocBuilder<ConnectionCubit, ConnectionStatus>(
-      builder: (context, state) {
-        if (state != ConnectionStatus.online) {
-          return _buildFallback();
+    return Image.network(
+      trimmedUrl,
+      fit: fit,
+      errorBuilder: (_, __, ___) => _buildFallback(),
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null || !showLoadingIndicator) {
+          return child;
         }
-
-        return Image.network(
-          trimmedUrl,
-          fit: fit,
-          errorBuilder: (_, __, ___) => _buildFallback(),
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null || !showLoadingIndicator) {
-              return child;
-            }
-            return const Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            );
-          },
+        return const Center(
+          child: SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
         );
       },
     );

@@ -16,15 +16,17 @@ class CustomCartButton extends StatelessWidget {
 
     return BlocBuilder<CartItemCubit, CartItemState>(
       builder: (context, state) {
+        final cartCubit = context.read<CartCubit>();
+
         return CustomButton(
           onPressed: () {
-            if (context.read<CartCubit>().cartEntity.cartItems.isNotEmpty) {
+            if (cartCubit.cartEntity.cartItems.isNotEmpty) {
               Navigator.pushNamed(
                 context,
                 CheckoutView.routeName,
                 arguments: CheckoutArgs(
-                  cartEntity: context.read<CartCubit>().cartEntity,
-                  cartCubit: context.read<CartCubit>(),
+                  cartEntity: cartCubit.cartEntity,
+                  cartCubit: cartCubit,
                 ),
               );
             } else {
@@ -32,7 +34,11 @@ class CustomCartButton extends StatelessWidget {
             }
           },
           text: l10n.paymentButton(
-            context.watch<CartCubit>().cartEntity.calculateTotalPrice().toString(),
+            context
+                .watch<CartCubit>()
+                .cartEntity
+                .calculateTotalPrice()
+                .toString(),
           ),
         );
       },

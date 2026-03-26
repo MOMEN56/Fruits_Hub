@@ -4,8 +4,8 @@ import 'package:fruit_hub/core/repos/order_repo/order_repo.dart';
 import 'package:fruit_hub/core/services/data_service.dart';
 import 'package:fruit_hub/core/utils/backend_endpoints.dart';
 import 'package:fruit_hub/features/checkout/data/models/order_model.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/user_order_entity.dart';
+import 'package:fruit_hub/features/checkout/domain/entities/order_entity.dart';
+import 'package:fruit_hub/features/checkout/domain/entities/user_order_entity.dart';
 
 class OrderRepoImpl implements OrderRepo {
   OrderRepoImpl(this._databaseService);

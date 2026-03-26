@@ -8,7 +8,7 @@ class DioHelper {
         headers: {
           'Content-Type': 'application/json',
         },
-        receiveDataWhenStatusError: true),
+        receiveDataWhenStatusError: true), // Keep error responses for debugging
   );
 
 

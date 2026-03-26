@@ -7,7 +7,7 @@ import 'package:fruit_hub/features/checkout/presentation/views/checkout_view.dar
 import 'package:fruit_hub/features/home/presentation/views/main_view.dart';
 import 'package:fruit_hub/features/notifications/presentation/views/notifications_view.dart';
 import 'package:fruit_hub/features/on_boarding/presentation/views/on_boarding_view.dart';
-import 'package:fruit_hub/features/orders/presentation/views/orders_view.dart';
+import 'package:fruit_hub/features/admin/orders/presentation/views/orders_view.dart';
 import 'package:fruit_hub/features/product_details/presentation/views/product_details_view.dart';
 import 'package:fruit_hub/features/splash/presentation/views/splash_view.dart';
 

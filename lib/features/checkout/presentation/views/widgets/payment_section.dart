@@ -3,8 +3,7 @@ import 'package:fruit_hub/features/checkout/presentation/views/widgets/order_sum
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/shipping_address_widget.dart';
 
 class PaymentSection extends StatelessWidget {
-  const PaymentSection({super.key, required this.pageController});
-  final PageController pageController;
+  const PaymentSection({super.key});
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -13,7 +12,7 @@ class PaymentSection extends StatelessWidget {
           SizedBox(height: 24),
           OrderSummryWidget(),
           SizedBox(height: 16),
-          ShippingAddressWidget(pageController: pageController),
+          const ShippingAddressWidget(),
         ],
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:fruit_hub/features/checkout/domain/entites/user_order_product_entity.dart';
+import 'package:fruit_hub/features/checkout/domain/entities/user_order_product_entity.dart';
 
 class UserOrderEntity {
   final String orderId;

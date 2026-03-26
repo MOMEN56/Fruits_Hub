@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:fruit_hub/features/orders/data/services/orders_service.dart';
-import 'package:fruit_hub/features/orders/domain/entities/dashboard_order_entity.dart';
+import 'package:fruit_hub/features/admin/orders/data/services/orders_service.dart';
+import 'package:fruit_hub/features/admin/orders/domain/entities/dashboard_order_entity.dart';
 
 part 'update_order_state.dart';
 

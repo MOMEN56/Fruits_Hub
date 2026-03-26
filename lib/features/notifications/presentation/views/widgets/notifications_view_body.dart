@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/features/home/presentation/views/main_view.dart';
-import 'package:fruit_hub/features/notifications/presentation/manger/notifications_cubit/notifications_cubit.dart';
-import 'package:fruit_hub/features/notifications/presentation/manger/notifications_cubit/notifications_state.dart';
+import 'package:fruit_hub/features/notifications/presentation/manager/notifications_cubit/notifications_cubit.dart';
+import 'package:fruit_hub/features/notifications/presentation/manager/notifications_cubit/notifications_state.dart';
 import 'package:fruit_hub/features/notifications/presentation/views/notifications_view.dart';
 import 'package:fruit_hub/features/notifications/presentation/views/widgets/highlighted_order_banner.dart';
 import 'package:fruit_hub/features/notifications/presentation/views/widgets/notification_card.dart';

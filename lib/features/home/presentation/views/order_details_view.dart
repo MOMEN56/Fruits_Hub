@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/user_order_entity.dart';
+import 'package:fruit_hub/features/checkout/domain/entities/user_order_entity.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_details_view_body.dart';
 
 class OrderDetailsView extends StatelessWidget {

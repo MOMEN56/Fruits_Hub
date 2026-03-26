@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fruit_hub/core/repos/order_repo/order_repo.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/order_entity.dart';
+import 'package:fruit_hub/features/checkout/domain/entities/order_entity.dart';
 
 part 'add_order_cubit_state.dart';
 

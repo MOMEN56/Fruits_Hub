@@ -3,7 +3,8 @@ import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show PostgrestException, Supabase;
 
 import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/errors/exceptions.dart';
@@ -11,6 +12,7 @@ import 'package:fruit_hub/core/errors/failures.dart';
 import 'package:fruit_hub/core/services/data_service.dart';
 import 'package:fruit_hub/core/services/firebase_auth_service.dart';
 import 'package:fruit_hub/core/services/shared_preferences_singleton.dart';
+import 'package:fruit_hub/core/services/current_user_service.dart';
 import 'package:fruit_hub/core/utils/backend_endpoints.dart';
 import 'package:fruit_hub/features/auth/data/models/user_model.dart';
 import 'package:fruit_hub/features/auth/domain/entites/user_entity.dart';
@@ -19,10 +21,12 @@ import 'package:fruit_hub/features/auth/domain/repos/auth_repo.dart';
 class AuthRepoImpl extends AuthRepo {
   final FirebaseAuthService firebaseAuthService;
   final DatabaseService databaseServices;
+  final CurrentUserService currentUserService;
 
   AuthRepoImpl({
     required this.databaseServices,
     required this.firebaseAuthService,
+    required this.currentUserService,
   });
 
   @override
@@ -87,6 +91,8 @@ class AuthRepoImpl extends AuthRepo {
       final userEntity = await _handleUserAfterAuth(user);
 
       return right(userEntity);
+    } on CustomException catch (e) {
+      return left(ServerFailure(e.message));
     } catch (e) {
       await deleteUser(user);
       log('Google signin error: $e');
@@ -103,6 +109,9 @@ class AuthRepoImpl extends AuthRepo {
       final userEntity = await _handleUserAfterAuth(user);
 
       return right(userEntity);
+    } on CustomException catch (e) {
+      await deleteUser(user);
+      return left(ServerFailure(e.message));
     } catch (e) {
       await deleteUser(user);
       log('Facebook signin error: $e');
@@ -217,6 +226,31 @@ class AuthRepoImpl extends AuthRepo {
   Future<void> deleteUser(User? user) async {
     if (user != null) {
       await firebaseAuthService.deleteUser();
+    }
+  }
+
+  @override
+  Future<void> signOut() async {
+    await _deleteUserDevices();
+
+    await firebaseAuthService.signOut();
+    await Prefs.setString(kUserData, '');
+  }
+
+  Future<void> _deleteUserDevices() async {
+    final userId = currentUserService.getCurrentUserId();
+    if (userId == null) return;
+
+    try {
+      await Supabase.instance.client
+          .from(BackendEndpoint.userDevices)
+          .delete()
+          .eq('user_id', userId);
+    } catch (error, stackTrace) {
+      log(
+        'Failed to remove user_devices row for $userId: $error',
+        stackTrace: stackTrace,
+      );
     }
   }
 

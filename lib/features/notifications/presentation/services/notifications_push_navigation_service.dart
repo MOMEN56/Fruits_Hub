@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fruit_hub/core/services/app_navigation_service.dart';
-import 'package:fruit_hub/core/services/git_it_services.dart';
+import 'package:fruit_hub/core/services/get_it_services.dart';
 import 'package:fruit_hub/core/services/push_notification_service.dart';
 import 'package:fruit_hub/features/notifications/presentation/views/notifications_view.dart';
 

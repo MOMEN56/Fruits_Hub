@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:pay_with_paymob/pay_with_paymob.dart';
 import 'package:pay_with_paymob/src/services/dio_helper.dart';
 import 'package:pay_with_paymob/src/views/visa_view.dart';
@@ -23,7 +24,7 @@ class PaymentView extends StatefulWidget {
 
 class PaymentViewState extends State<PaymentView> {
   String paymentFirstToken = '';
-  String paymentOrderId = '';
+  int paymentOrderId = 0;
   String finalToken = '';
   final PaymentData paymentData = PaymentData();
 
@@ -121,7 +122,16 @@ class PaymentViewState extends State<PaymentView> {
         ),
       );
     } catch (error) {
-      log('Paymob card flow error: $error');
+      if (error is DioException) {
+        log(
+          'Paymob card flow DioException: '
+          'status=${error.response?.statusCode} '
+          'url=${error.requestOptions.uri} '
+          'response=${error.response?.data}',
+        );
+      } else {
+        log('Paymob card flow error: $error');
+      }
       if (!mounted) return;
       setState(() {
         errorMessage = 'Unable to start card payment. Please try again.';
@@ -152,18 +162,23 @@ class PaymentViewState extends State<PaymentView> {
       data: {
         "auth_token": paymentFirstToken,
         "delivery_needed": "false",
-        "amount_cents": (widget.price * 100).round().toString(),
+        "amount_cents": (widget.price * 100).round(),
         "currency": "EGP",
         "items": [],
       },
     );
-    paymentOrderId = response.data['id'].toString();
+    final rawId = response.data['id'];
+    final parsedId = int.tryParse(rawId.toString());
+    if (parsedId == null) {
+      throw FormatException('Invalid Paymob order id: $rawId');
+    }
+    paymentOrderId = parsedId;
   }
 
   Future<void> _getPaymentRequest() async {
     final requestData = {
       "auth_token": paymentFirstToken,
-      "amount_cents": (widget.price * 100).round().toString(),
+      "amount_cents": (widget.price * 100).round(),
       "expiration": 3600,
       "order_id": paymentOrderId,
       "billing_data": {
@@ -182,8 +197,8 @@ class PaymentViewState extends State<PaymentView> {
         "state": "NA",
       },
       "currency": "EGP",
-      "integration_id": paymentData.integrationCardId,
-      "lock_order_when_paid": "false",
+      "integration_id": int.parse(paymentData.integrationCardId),
+      "lock_order_when_paid": false,
     };
 
     final response = await DioHelper.postData(

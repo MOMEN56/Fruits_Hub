@@ -13,38 +13,22 @@ class ConnectionGate extends StatefulWidget {
     required this.hasUsableCache,
     this.requiresInternet = true,
     this.onRetry,
-<<<<<<< HEAD
     this.noNetworkTitle,
     this.noNetworkMessage,
     this.noInternetTitle,
     this.noInternetMessage,
-=======
-    this.noNetworkTitle =
-        '\u0644\u0627 \u064A\u0648\u062C\u062F \u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u0634\u0628\u0643\u0629',
-    this.noNetworkMessage =
-        '\u064A\u0628\u062F\u0648 \u0623\u0646\u0643 \u063A\u064A\u0631 \u0645\u062A\u0635\u0644 \u0628\u0623\u064A \u0634\u0628\u0643\u0629 \u062D\u0627\u0644\u064A\u064B\u0627. \u062A\u062D\u0642\u0642 \u0645\u0646 \u0627\u0644\u0648\u0627\u064A \u0641\u0627\u064A \u0623\u0648 \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0647\u0627\u062A\u0641.',
-    this.noInternetTitle =
-        '\u0644\u0627 \u064A\u0648\u062C\u062F \u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u0625\u0646\u062A\u0631\u0646\u062A',
-    this.noInternetMessage =
-        '\u0623\u0646\u062A \u0645\u062A\u0635\u0644 \u0628\u0627\u0644\u0634\u0628\u0643\u0629\u060C \u0644\u0643\u0646 \u0644\u0627 \u064A\u0648\u062C\u062F \u0627\u062A\u0635\u0627\u0644 \u0641\u0639\u0644\u064A \u0628\u0627\u0644\u0625\u0646\u062A\u0631\u0646\u062A \u0641\u064A \u0627\u0644\u0648\u0642\u062A \u0627\u0644\u062D\u0627\u0644\u064A.',
->>>>>>> 8209224a4c008167926f14f1325865e44032663a
+    this.hideChildWhenOffline = true,
   });
 
   final Widget child;
   final bool hasUsableCache;
   final bool requiresInternet;
   final Future<void> Function()? onRetry;
-<<<<<<< HEAD
   final String? noNetworkTitle;
   final String? noNetworkMessage;
   final String? noInternetTitle;
   final String? noInternetMessage;
-=======
-  final String noNetworkTitle;
-  final String noNetworkMessage;
-  final String noInternetTitle;
-  final String noInternetMessage;
->>>>>>> 8209224a4c008167926f14f1325865e44032663a
+  final bool hideChildWhenOffline;
 
   @override
   State<ConnectionGate> createState() => _ConnectionGateState();
@@ -86,7 +70,6 @@ class _ConnectionGateState extends State<ConnectionGate> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final l10n = S.of(context);
     final noNetworkTitle = widget.noNetworkTitle ?? l10n.noNetworkTitle;
     final noNetworkMessage = widget.noNetworkMessage ?? l10n.noNetworkMessage;
@@ -94,8 +77,6 @@ class _ConnectionGateState extends State<ConnectionGate> {
     final noInternetMessage =
         widget.noInternetMessage ?? l10n.noInternetMessage;
 
-=======
->>>>>>> 8209224a4c008167926f14f1325865e44032663a
     if (!widget.requiresInternet || widget.hasUsableCache) {
       return widget.child;
     }
@@ -109,37 +90,17 @@ class _ConnectionGateState extends State<ConnectionGate> {
       },
       builder: (context, status) {
         switch (status) {
-          case ConnectionStatus.noNetwork:
-            return NoConnectionView(
-<<<<<<< HEAD
+      case ConnectionStatus.noNetwork:
+            return _buildOfflineView(
+              context,
               title: noNetworkTitle,
               message: noNetworkMessage,
-=======
-              title: widget.noNetworkTitle,
-              message: widget.noNetworkMessage,
->>>>>>> 8209224a4c008167926f14f1325865e44032663a
-              onRetry:
-                  widget.onRetry == null
-                      ? null
-                      : () {
-                        _retry();
-                      },
             );
           case ConnectionStatus.connectedNoInternet:
-            return NoConnectionView(
-<<<<<<< HEAD
+            return _buildOfflineView(
+              context,
               title: noInternetTitle,
               message: noInternetMessage,
-=======
-              title: widget.noInternetTitle,
-              message: widget.noInternetMessage,
->>>>>>> 8209224a4c008167926f14f1325865e44032663a
-              onRetry:
-                  widget.onRetry == null
-                      ? null
-                      : () {
-                        _retry();
-                      },
             );
           case ConnectionStatus.checking:
             return const Center(child: CircularProgressIndicator());
@@ -150,6 +111,38 @@ class _ConnectionGateState extends State<ConnectionGate> {
             return widget.child;
         }
       },
+    );
+  }
+
+  Widget _buildOfflineView(
+    BuildContext context, {
+    required String title,
+    required String message,
+  }) {
+    final noConnectionView = NoConnectionView(
+      title: title,
+      message: message,
+      onRetry: widget.onRetry == null
+          ? null
+          : () {
+              _retry();
+            },
+    );
+
+    if (widget.hideChildWhenOffline) {
+      return noConnectionView;
+    }
+
+    return Stack(
+      children: [
+        widget.child,
+        Positioned.fill(
+          child: ColoredBox(
+            color: Colors.black.withOpacity(0.4),
+            child: noConnectionView,
+          ),
+        ),
+      ],
     );
   }
 }

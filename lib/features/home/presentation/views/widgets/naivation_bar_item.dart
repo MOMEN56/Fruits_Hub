@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/in_active_item.dart';
 
-import '../../../domain/entites/bottom_navigation_bar_entity.dart';
+import '../../../domain/entities/bottom_navigation_bar_entity.dart';
 import 'active_item.dart';
 
 class NaivgationBarItem extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:fruit_hub/core/services/data_service.dart';
-import 'package:fruit_hub/core/services/subabase_services.dart';
+import 'package:fruit_hub/core/services/supabase_services.dart';
 import 'package:fruit_hub/core/utils/backend_endpoints.dart';
 import 'package:fruit_hub/generated/l10n.dart';
 

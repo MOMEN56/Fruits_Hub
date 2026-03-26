@@ -34,7 +34,9 @@ class OrderModel {
               .map((e) => OrderProductModel.fromEntity(cartItemEntity: e))
               .toList(),
       paymentMethod:
-          orderEntity.payWithCash! ? S.current.cashLabel : S.current.onlineLabel,
+          orderEntity.payWithCash!
+              ? S.current.cashLabel
+              : S.current.onlineLabel,
     );
   }
 

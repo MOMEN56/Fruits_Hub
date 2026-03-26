@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
-import 'package:fruit_hub/features/checkout/domain/entites/user_order_entity.dart';
+import 'package:fruit_hub/features/checkout/domain/entities/user_order_entity.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_product_tile.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_summary_grid.dart';
 import 'package:fruit_hub/features/home/presentation/views/widgets/orders/order_ui_mapper.dart';

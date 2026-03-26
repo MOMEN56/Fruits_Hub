@@ -8,8 +8,8 @@ import 'package:fruit_hub/core/helper_fun/on-generate-route.dart';
 import 'package:fruit_hub/core/services/app_navigation_service.dart';
 import 'package:fruit_hub/core/services/app_startup_service.dart';
 import 'package:fruit_hub/core/services/custom_bloc_observer.dart';
-import 'package:fruit_hub/core/services/git_it_services.dart';
-import 'package:fruit_hub/core/services/subabase_services.dart';
+import 'package:fruit_hub/core/services/get_it_services.dart';
+import 'package:fruit_hub/core/services/supabase_services.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/features/splash/presentation/views/splash_view.dart';
 import 'package:fruit_hub/generated/l10n.dart';
@@ -23,7 +23,7 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Prefs.init();
-  setupGitIt();
+  setupGetIt();
   AppStartupService.initialize();
   runApp(const FruitHub());
 }

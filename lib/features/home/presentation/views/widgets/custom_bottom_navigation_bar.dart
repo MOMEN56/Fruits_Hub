@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/utils/responsive_layout.dart';
-import 'package:fruit_hub/features/home/domain/entites/bottom_navigation_bar_entity.dart';
+import 'package:fruit_hub/features/home/domain/entities/bottom_navigation_bar_entity.dart';
 import 'naivation_bar_item.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {

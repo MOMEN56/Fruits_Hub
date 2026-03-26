@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/address_input_section.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/payment_section.dart';
@@ -9,12 +8,24 @@ class CheckoutStepsPageView extends StatelessWidget {
     super.key,
     required this.pageController,
     required this.formKey,
-    required this.valueListenable,
+    required this.addressAutovalidateMode,
+    required this.addressController,
+    required this.cityController,
+    required this.emailController,
+    required this.floorController,
+    required this.nameController,
+    required this.phoneController,
   });
 
   final GlobalKey<FormState> formKey;
   final PageController pageController;
-  final ValueListenable<AutovalidateMode> valueListenable;
+  final AutovalidateMode addressAutovalidateMode;
+  final TextEditingController addressController;
+  final TextEditingController cityController;
+  final TextEditingController emailController;
+  final TextEditingController floorController;
+  final TextEditingController nameController;
+  final TextEditingController phoneController;
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +45,17 @@ class CheckoutStepsPageView extends StatelessWidget {
   List<Widget> getPages() {
     return [
       const ShippingSection(),
-      AddressInputSection(formKey: formKey, valueListenable: valueListenable),
-      PaymentSection(pageController: pageController),
+      AddressInputSection(
+        addressController: addressController,
+        autovalidateMode: addressAutovalidateMode,
+        cityController: cityController,
+        emailController: emailController,
+        floorController: floorController,
+        formKey: formKey,
+        nameController: nameController,
+        phoneController: phoneController,
+      ),
+      const PaymentSection(),
     ];
   }
 }

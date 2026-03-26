@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
+﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fruit_hub/core/notification_widget.dart';
 import 'package:fruit_hub/core/services/current_user_service.dart';
-import 'package:fruit_hub/core/services/git_it_services.dart';
+import 'package:fruit_hub/core/services/get_it_services.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
 import 'package:fruit_hub/core/utils/responsive_layout.dart';

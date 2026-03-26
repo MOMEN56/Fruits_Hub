@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pay_with_paymob/src/helpers/paymob_snack_bar.dart';
+import 'package:pay_with_paymob/src/services/dio_helper.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class VisaScreen extends StatefulWidget {
@@ -23,6 +24,18 @@ class _VisaScreenState extends State<VisaScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  Uri _buildIframeUri() {
+    final apiBaseUri = Uri.parse(DioHelper.dio.options.baseUrl);
+    final normalizedApiPath = apiBaseUri.path.replaceFirst(RegExp(r'/+$'), '');
+
+    return apiBaseUri.replace(
+      path: '$normalizedApiPath/acceptance/iframes/${widget.iframeId}',
+      queryParameters: {
+        'payment_token': widget.finalToken,
+      },
+    );
   }
 
   void _handlePaymobResult(String url) {
@@ -64,11 +77,7 @@ class _VisaScreenState extends State<VisaScreen> {
                 showPaymobSnackBar(context, message.message);
               },
             )
-            ..loadRequest(
-              Uri.parse(
-                'https://accept.paymob.com/api/acceptance/iframes/?payment_token=',
-              ),
-            ),
+            ..loadRequest(_buildIframeUri()),
         ),
       ),
     );
