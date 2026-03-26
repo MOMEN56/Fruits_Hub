@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
+import 'package:fruit_hub/core/services/app_navigation_service.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
+import 'package:fruit_hub/features/home/presentation/views/main_view.dart';
 import 'package:fruit_hub/features/product_details/presentation/views/widgets/product_details_veiw_body.dart';
 import 'package:fruit_hub/generated/l10n.dart';
 
@@ -39,6 +41,12 @@ class CustomProductDetailsButton extends StatelessWidget {
           l10n.addedQuantityToCart(selectedQuantity, widget.productEntity.name),
           type: AppSnackBarType.success,
           title: l10n.addSuccessTitle,
+          actionLabel: l10n.cart,
+          onAction: () {
+            AppNavigationService.setMainViewTab(MainView.cartViewIndex);
+            Navigator.of(context).pop();
+          },
+          duration: const Duration(seconds: 3),
         );
       },
     );

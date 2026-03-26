@@ -26,20 +26,6 @@ class FruitItem extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            Positioned(
-              top: 8,
-              right: 8,
-              child: IconButton(
-                onPressed: () {},
-                visualDensity: VisualDensity.compact,
-                splashRadius: 18,
-                icon: const Icon(
-                  Icons.favorite_outline,
-                  size: 20,
-                  color: Color(0xFF1F1F1F),
-                ),
-              ),
-            ),
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(10, 14, 10, 10),
@@ -52,7 +38,7 @@ class FruitItem extends StatelessWidget {
                         child: CustomNetworkImage(
                           imageUrl: productEntity.imageUrl ?? '',
                           fit: BoxFit.contain,
-                          showLoadingIndicator: true,
+                          showLoadingSkeleton: true,
                         ),
                       ),
                     ),
@@ -120,6 +106,20 @@ class FruitItem extends StatelessWidget {
                       ],
                     ),
                   ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: IconButton(
+                onPressed: () {},
+                visualDensity: VisualDensity.compact,
+                splashRadius: 18,
+                icon: const Icon(
+                  Icons.favorite_outline,
+                  size: 20,
+                  color: Color(0xFF1F1F1F),
                 ),
               ),
             ),

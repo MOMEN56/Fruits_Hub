@@ -35,9 +35,13 @@ class CartItem extends StatelessWidget {
               Container(
                 width: 73,
                 height: 92,
-                decoration: const BoxDecoration(color: Color(0xFFF3F5F7)),
-                child: CustomNetworkImage(
-                  imageUrl: carItemEntity.productEntity.imageUrl!,
+                decoration: const BoxDecoration(color: Colors.transparent),
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: CustomNetworkImage(
+                    imageUrl: carItemEntity.productEntity.imageUrl!,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
               const SizedBox(width: 17),
@@ -63,12 +67,16 @@ class CartItem extends StatelessWidget {
                               carItemEntity,
                             );
                           },
-                          child: SvgPicture.asset(Assets.assetsImagesTrashimage),
+                          child: SvgPicture.asset(
+                            Assets.assetsImagesTrashimage,
+                          ),
                         ),
                       ],
                     ),
                     Text(
-                      l10n.grams(carItemEntity.calculateTotalWeight().toString()),
+                      l10n.grams(
+                        carItemEntity.calculateTotalWeight().toString(),
+                      ),
                       textAlign: TextAlign.right,
                       style: TextStyles.regular13.copyWith(
                         color: AppColors.secondaryColor,

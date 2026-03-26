@@ -53,7 +53,7 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
                     child: CustomNetworkImage(
                       imageUrl: widget.productEntity.imageUrl ?? '',
                       fit: BoxFit.contain,
-                      showLoadingIndicator: true,
+                      showLoadingSkeleton: true,
                     ),
                   ),
                 ),
