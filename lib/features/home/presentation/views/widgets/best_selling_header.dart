@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/features/best_selling/presentation/view/best_selling_view.dart';
+import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
 import 'package:fruit_hub/generated/l10n.dart';
 
 class BestSellingHeader extends StatelessWidget {
@@ -21,7 +23,12 @@ class BestSellingHeader extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.of(context).pushNamed(BestSellingView.routeName);
+              Navigator.of(context).pushNamed(
+                BestSellingView.routeName,
+                arguments: BestSellingViewArgs(
+                  cartCubit: context.read<CartCubit>(),
+                ),
+              );
             },
             child: Text(
               l10n.more,

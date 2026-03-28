@@ -43,8 +43,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  flutter_launcher_icons: ^0.14.4     # ✅ اتنقلت هنا
-
+  flutter_launcher_icons: ^0.14.4    
 flutter:
   generate: true
   uses-material-design: true
