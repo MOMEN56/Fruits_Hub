@@ -6,12 +6,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fruit_hub/core/services/current_user_service.dart';
 import 'package:fruit_hub/core/utils/backend_endpoints.dart';
-import 'package:fruit_hub/firebase_options.dart';
+import 'package:fruit_hub/firebase_runtime_options.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: RuntimeFirebaseOptions.currentPlatform);
 }
 
 class PushNotificationService {

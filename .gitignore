@@ -45,4 +45,18 @@ app.*.map.json
 /android/app/release
 
 # Secrets
+android/secrets.properties
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+dart_defines.json
+lib/firebase_options.dart
 lib/core/utils/app_keys.dart
+
+# Local source/code exports
+all_lib_files.txt
+project_lib_files.txt
+combined_lib.txt
+project_code.txt
+lib_files.txt
+all_dart_files.txt

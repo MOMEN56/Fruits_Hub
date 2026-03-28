@@ -1,3 +1,11 @@
+def secretsProperties = new Properties()
+def secretsPropertiesFile = rootProject.file("secrets.properties")
+if (secretsPropertiesFile.exists()) {
+    secretsPropertiesFile.withInputStream { stream ->
+        secretsProperties.load(stream)
+    }
+}
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -31,6 +39,11 @@ android {
         targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders = [
+            facebookAppId: secretsProperties.getProperty("FACEBOOK_APP_ID", ""),
+            facebookClientToken: secretsProperties.getProperty("FACEBOOK_CLIENT_TOKEN", ""),
+            facebookLoginProtocolScheme: secretsProperties.getProperty("FACEBOOK_LOGIN_PROTOCOL_SCHEME", ""),
+        ]
     }
 
     buildTypes {

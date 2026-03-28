@@ -1,3 +1,4 @@
+import 'package:fruit_hub/core/config/app_environment.dart';
 import 'package:fruit_hub/core/services/data_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -6,9 +7,14 @@ class SupabaseService implements DatabaseService {
 
   static initSupabase() async {
     await Supabase.initialize(
-      url: 'https://iwhxwcqfcpcblvdifidv.supabase.co',
-      anonKey:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3aHh3Y3FmY3BjYmx2ZGlmaWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2MjA0NzgsImV4cCI6MjA4NTE5NjQ3OH0.BZp9PXcXXOJbb5Npy3wra7JO6Ed0M-JrRqYXSQ8F83c',
+      url: AppEnvironment.requireValue(
+        'SUPABASE_URL',
+        AppEnvironment.supabaseUrl,
+      ),
+      anonKey: AppEnvironment.requireValue(
+        'SUPABASE_ANON_KEY',
+        AppEnvironment.supabaseAnonKey,
+      ),
     );
   }
 
