@@ -4,8 +4,10 @@ import 'package:fruit_hub/features/auth/presentation/views/sign_up_view.dart';
 import 'package:fruit_hub/features/auth/presentation/views/signin_view.dart';
 import 'package:fruit_hub/features/best_selling/presentation/view/best_selling_view.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/checkout_view.dart';
+import 'package:fruit_hub/core/services/get_it_services.dart';
 import 'package:fruit_hub/features/home/presentation/cubits/cart_cubit/cart_cubit.dart';
 import 'package:fruit_hub/features/home/presentation/views/main_view.dart';
+import 'package:fruit_hub/features/home/domain/repos/cart_repository.dart';
 import 'package:fruit_hub/features/notifications/presentation/views/notifications_view.dart';
 import 'package:fruit_hub/features/on_boarding/presentation/views/on_boarding_view.dart';
 import 'package:fruit_hub/features/admin/orders/presentation/views/orders_view.dart';
@@ -43,7 +45,10 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
           settings.arguments is int ? settings.arguments as int : 0;
       return MaterialPageRoute(
         builder: (_) => BlocProvider(
-          create: (_) => CartCubit(),
+          create:
+              (_) => CartCubit(
+                cartRepository: getIt<CartRepository>(),
+              ),
           child: MainView(initialViewIndex: initialViewIndex),
         ),
       );

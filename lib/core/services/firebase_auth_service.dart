@@ -7,6 +7,26 @@ import 'package:fruit_hub/generated/l10n.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthService {
+  Future<User?> restoreSessionUser({
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      return currentUser;
+    }
+
+    try {
+      final restoredUser = await FirebaseAuth.instance.authStateChanges().first
+          .timeout(timeout);
+      if (restoredUser != null) {
+        return restoredUser;
+      }
+    } catch (_) {}
+
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+    return FirebaseAuth.instance.currentUser;
+  }
+
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
 
@@ -124,8 +144,9 @@ class FirebaseAuthService {
 
       if (e.code == 'account-exists-with-different-credential') {
         final email = e.email ?? await _getFacebookEmail();
-        if (email == null)
+        if (email == null) {
           throw CustomException(message: S.current.genericTryAgain);
+        }
 
         // جيب الـ providers المرتبطة بالـ email ده
         final methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(
@@ -174,36 +195,5 @@ class FirebaseAuthService {
       log('Failed to retrieve Facebook email: $error');
       return null;
     }
-  }
-
-  Future<String?> _getPrimaryProvider(String email) async {
-    try {
-      final methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(
-        email,
-      );
-      return methods.isNotEmpty ? methods.first : null;
-    } catch (error) {
-      log('Failed to fetch sign in methods for $email: $error');
-      return null;
-    }
-  }
-
-  String _buildProviderHint(String? providerId) {
-    if (providerId == null) return '';
-
-    final providerName = _providerDisplayName(providerId);
-    final hintText =
-        providerId == EmailAuthProvider.PROVIDER_ID
-            ? ' Please sign in with your email and password.'
-            : ' Please sign in with $providerName.';
-    return hintText;
-  }
-
-  String _providerDisplayName(String providerId) {
-    if (providerId == GoogleAuthProvider.PROVIDER_ID) return 'Google';
-    if (providerId == FacebookAuthProvider.PROVIDER_ID) return 'Facebook';
-    if (providerId == EmailAuthProvider.PROVIDER_ID)
-      return 'email and password';
-    return providerId;
   }
 }

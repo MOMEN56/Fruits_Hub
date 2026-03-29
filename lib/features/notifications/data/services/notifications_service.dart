@@ -1,20 +1,33 @@
 import 'dart:async';
 
+import 'package:fruit_hub/core/connectivity/connection_service.dart';
+import 'package:fruit_hub/core/connectivity/connection_status.dart';
+import 'package:fruit_hub/core/connectivity/network_error_matcher.dart';
 import 'package:fruit_hub/core/utils/backend_endpoints.dart';
 import 'package:fruit_hub/features/notifications/domain/entities/notification_entity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotificationsService {
-  NotificationsService({SupabaseClient? supabaseClient})
-    : _supabaseClient = supabaseClient ?? Supabase.instance.client;
+  NotificationsService({
+    SupabaseClient? supabaseClient,
+    ConnectionService? connectionService,
+  }) : _supabaseClient = supabaseClient ?? Supabase.instance.client,
+       _connectionService = connectionService {
+    _connectionSubscription = _connectionService?.stream.listen(
+      _handleConnectionStatusChange,
+    );
+  }
 
   final SupabaseClient _supabaseClient;
+  final ConnectionService? _connectionService;
   final StreamController<List<NotificationEntity>> _notificationsController =
       StreamController<List<NotificationEntity>>.broadcast();
 
   RealtimeChannel? _realtimeChannel;
+  StreamSubscription<ConnectionStatus>? _connectionSubscription;
   String? _activeUserId;
   bool _isDisposed = false;
+  bool _shouldResubscribeOnReconnect = false;
 
   Stream<List<NotificationEntity>> watchNotifications({
     required String userId,
@@ -69,7 +82,10 @@ class NotificationsService {
       if (!_isDisposed && !_notificationsController.isClosed) {
         _notificationsController.add(notifications);
       }
-    } catch (_) {
+    } catch (error) {
+      if (isLikelyNetworkError(error)) {
+        _connectionService?.reportConnectionIssue();
+      }
       if (!_isDisposed && !_notificationsController.isClosed) {
         _notificationsController.add(const <NotificationEntity>[]);
       }
@@ -93,11 +109,34 @@ class NotificationsService {
               unawaited(refresh());
             },
           )
-          ..subscribe();
+          ..subscribe((status, _) {
+            if (status == RealtimeSubscribeStatus.subscribed) {
+              _shouldResubscribeOnReconnect = false;
+              return;
+            }
+
+            if (status == RealtimeSubscribeStatus.channelError) {
+              _shouldResubscribeOnReconnect = true;
+              _connectionService?.reportRealtimeChannelError();
+            }
+          });
+  }
+
+  void _handleConnectionStatusChange(ConnectionStatus status) {
+    if (_isDisposed ||
+        !_shouldResubscribeOnReconnect ||
+        status != ConnectionStatus.online) {
+      return;
+    }
+
+    _shouldResubscribeOnReconnect = false;
+    _subscribeToRealtimeChanges();
+    unawaited(refresh());
   }
 
   void dispose() {
     _isDisposed = true;
+    unawaited(_connectionSubscription?.cancel());
     unawaited(_realtimeChannel?.unsubscribe());
     unawaited(_notificationsController.close());
   }

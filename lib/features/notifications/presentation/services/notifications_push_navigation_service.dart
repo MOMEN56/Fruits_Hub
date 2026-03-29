@@ -9,6 +9,7 @@ import 'package:fruit_hub/features/notifications/presentation/views/notification
 abstract final class NotificationsPushNavigationService {
   static bool _isInitialized = false;
   static NotificationsViewArgs? _pendingArgs;
+  static bool _isNavigating = false;
 
   static void initialize() {
     if (_isInitialized) {
@@ -26,33 +27,32 @@ abstract final class NotificationsPushNavigationService {
 
   static Future<void> _openNotificationsFromPush(RemoteMessage message) async {
     final orderId = (message.data['order_id'] ?? '').toString().trim();
-    final args = NotificationsViewArgs(
+    _pendingArgs = NotificationsViewArgs(
       highlightedOrderId: orderId.isEmpty ? null : orderId,
     );
-    _pushToNotifications(args);
+    await openPendingIfPossible();
   }
 
-  static void _pushToNotifications(NotificationsViewArgs args) {
-    final navigatorState = AppNavigationService.navigatorKey.currentState;
-    if (navigatorState == null) {
-      _pendingArgs = args;
-      Future<void>.delayed(Duration.zero, () {
-        final pending = _pendingArgs;
-        if (pending == null) {
-          return;
-        }
-        _pendingArgs = null;
-        AppNavigationService.navigatorKey.currentState?.pushNamed(
-          NotificationsView.routeName,
-          arguments: pending,
-        );
-      });
+  static Future<void> openPendingIfPossible() async {
+    if (_isNavigating || !AppNavigationService.isMainViewReady) {
       return;
     }
 
-    navigatorState.pushNamed(
-      NotificationsView.routeName,
-      arguments: args,
-    );
+    final args = _pendingArgs;
+    final navigatorState = AppNavigationService.navigatorKey.currentState;
+    if (args == null || navigatorState == null) {
+      return;
+    }
+
+    _isNavigating = true;
+    _pendingArgs = null;
+    try {
+      await navigatorState.pushNamed(
+        NotificationsView.routeName,
+        arguments: args,
+      );
+    } finally {
+      _isNavigating = false;
+    }
   }
 }

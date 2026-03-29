@@ -6,6 +6,7 @@ class BackendEndpoint {
   static const addOrder = 'orders';
   static const notifications = 'notifications';
   static const userDevices = 'user_devices';
+  static const userCarts = 'user_carts';
   static const sendPushNotificationFunction = 'send-push-notification';
   static const adminNotificationsUserId = 'dashboard_admin';
 }

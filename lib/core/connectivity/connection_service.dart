@@ -33,6 +33,18 @@ class ConnectionService {
   Stream<ConnectionStatus> get stream => _controller.stream;
   ConnectionStatus get currentStatus => _currentStatus;
 
+  void reportConnectionIssue() {
+    if (_isDisposed || _currentStatus == ConnectionStatus.noNetwork) {
+      return;
+    }
+
+    _emit(ConnectionStatus.connectedNoInternet);
+  }
+
+  void reportRealtimeChannelError() {
+    reportConnectionIssue();
+  }
+
   Future<void> startMonitoring() async {
     if (_isDisposed || _connectivitySubscription != null) {
       return;

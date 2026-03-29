@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fruit_hub/core/helper_fun/format_weight_in_kilos.dart';
 import 'package:fruit_hub/core/utils/app_colors.dart';
 import 'package:fruit_hub/core/utils/app_text_styles.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
@@ -74,8 +75,9 @@ class CartItem extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      l10n.grams(
-                        carItemEntity.calculateTotalWeight().toString(),
+                      formatWeightInKilos(
+                        l10n,
+                        carItemEntity.calculateTotalWeight(),
                       ),
                       textAlign: TextAlign.right,
                       style: TextStyles.regular13.copyWith(

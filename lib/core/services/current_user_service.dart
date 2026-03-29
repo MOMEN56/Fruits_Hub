@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/services/shared_preferences_singleton.dart';
 import 'package:fruit_hub/features/auth/data/models/user_model.dart';
@@ -28,5 +29,18 @@ class CurrentUserService {
       return null;
     }
     return userId;
+  }
+
+  Future<void> saveCurrentUser(UserEntity user) async {
+    final rawUserData = jsonEncode(UserModel.fromEntity(user).toMap());
+    await Prefs.setString(kUserData, rawUserData);
+  }
+
+  Future<void> saveFirebaseUser(User user) async {
+    await saveCurrentUser(UserModel.fromFirebaseUser(user));
+  }
+
+  Future<void> clearCurrentUser() async {
+    await Prefs.setString(kUserData, '');
   }
 }

@@ -13,6 +13,11 @@ import 'package:fruit_hub/features/auth/domain/repos/auth_repo.dart';
 import 'package:fruit_hub/features/auth/domain/usecases/sign_out_use_case.dart';
 import 'package:fruit_hub/features/checkout/data/services/order_creation_notifications_service.dart';
 import 'package:fruit_hub/features/checkout/domain/usecases/add_order_use_case.dart';
+import 'package:fruit_hub/features/home/data/data_sources/cart_local_data_source.dart';
+import 'package:fruit_hub/features/home/data/data_sources/cart_remote_data_source.dart';
+import 'package:fruit_hub/features/home/data/repos/cart_repository_impl.dart';
+import 'package:fruit_hub/features/home/data/serializers/cart_serializer.dart';
+import 'package:fruit_hub/features/home/domain/repos/cart_repository.dart';
 import 'package:get_it/get_it.dart';
 
 final getIt = GetIt.instance;
@@ -20,8 +25,13 @@ final getIt = GetIt.instance;
 void setupGetIt() {
   getIt.registerSingleton<FirebaseAuthService>(FirebaseAuthService());
 
+  if (!GetIt.I.isRegistered<ConnectionService>()) {
+    GetIt.I.registerSingleton<ConnectionService>(ConnectionService());
+  }
   if (!GetIt.I.isRegistered<DatabaseService>()) {
-    GetIt.I.registerSingleton<DatabaseService>(SupabaseService());
+    GetIt.I.registerSingleton<DatabaseService>(
+      SupabaseService(connectionService: getIt<ConnectionService>()),
+    );
   }
   if (!GetIt.I.isRegistered<CurrentUserService>()) {
     GetIt.I.registerSingleton<CurrentUserService>(CurrentUserService());
@@ -62,7 +72,14 @@ void setupGetIt() {
       PushNotificationService(currentUserService: getIt<CurrentUserService>()),
     );
   }
-  if (!GetIt.I.isRegistered<ConnectionService>()) {
-    GetIt.I.registerSingleton<ConnectionService>(ConnectionService());
+  if (!GetIt.I.isRegistered<CartRepository>()) {
+    GetIt.I.registerSingleton<CartRepository>(
+      CartRepositoryImpl(
+        localDataSource: CartLocalDataSource(),
+        remoteDataSource: CartRemoteDataSource(getIt<DatabaseService>()),
+        serializer: const CartSerializer(),
+        currentUserService: getIt<CurrentUserService>(),
+      ),
+    );
   }
 }

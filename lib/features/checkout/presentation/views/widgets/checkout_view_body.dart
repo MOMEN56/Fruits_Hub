@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fruit_hub/core/connectivity/connection_cubit.dart';
+import 'package:fruit_hub/core/connectivity/connection_status.dart';
 import 'package:fruit_hub/core/helper_fun/build_snack_bar.dart';
 import 'package:fruit_hub/core/utils/responsive_layout.dart';
 import 'package:fruit_hub/core/widgets/custom_button.dart';
 import 'package:fruit_hub/features/checkout/domain/entities/shipping_address_entity.dart';
-import 'package:fruit_hub/features/checkout/presentation/cubits/checkout/checkout_cubit.dart';
 import 'package:fruit_hub/features/checkout/presentation/cubits/add_order_cubit/add_order_cubit.dart';
+import 'package:fruit_hub/features/checkout/presentation/cubits/checkout/checkout_cubit.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_steps.dart';
 import 'package:fruit_hub/features/checkout/presentation/views/widgets/checkout_steps_page_view.dart';
 import 'package:fruit_hub/generated/l10n.dart';
@@ -113,7 +115,7 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
     );
   }
 
-  void _handleStepTapped(int targetStepIndex) {
+  Future<void> _handleStepTapped(int targetStepIndex) async {
     final checkoutCubit = context.read<CheckoutCubit>();
     final currentStepIndex = checkoutCubit.state.currentStepIndex;
 
@@ -126,10 +128,10 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
       return;
     }
 
-    _handlePrimaryAction();
+    await _handlePrimaryAction();
   }
 
-  void _handlePrimaryAction() {
+  Future<void> _handlePrimaryAction() async {
     switch (context.read<CheckoutCubit>().state.currentStepIndex) {
       case 0:
         _continueFromShippingStep();
@@ -138,6 +140,10 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
         _continueFromAddressStep();
         return;
       case 2:
+        final isConnected = await _ensureInternetConnection();
+        if (!isConnected || !mounted) {
+          return;
+        }
         context.read<AddOrderCubit>().submitOrder(
           order: context.read<CheckoutCubit>().state.orderInput,
         );
@@ -172,5 +178,31 @@ class _CheckoutViewBodyState extends State<CheckoutViewBody> {
       ),
     );
     context.read<CheckoutCubit>().moveToNextStep();
+  }
+
+  Future<bool> _ensureInternetConnection() async {
+    final connectionCubit = context.read<ConnectionCubit>();
+    await connectionCubit.refresh();
+    if (!mounted) {
+      return false;
+    }
+
+    final connectionStatus = connectionCubit.state;
+    if (connectionStatus == ConnectionStatus.online) {
+      return true;
+    }
+
+    final l10n = S.of(context);
+    buildSnackBar(
+      context,
+      l10n.checkInternetConnection,
+      title: switch (connectionStatus) {
+        ConnectionStatus.noNetwork => l10n.noNetworkTitle,
+        ConnectionStatus.connectedNoInternet => l10n.noInternetTitle,
+        ConnectionStatus.checking || ConnectionStatus.online =>
+          l10n.noInternetTitle,
+      },
+    );
+    return false;
   }
 }

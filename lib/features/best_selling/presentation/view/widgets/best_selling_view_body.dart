@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fruit_hub/core/connectivity/connection_gate.dart';
 import 'package:fruit_hub/core/products_cubit/cubit/products_cubit.dart';
 import 'package:fruit_hub/core/utils/products_sort_option.dart';
 import 'package:fruit_hub/core/utils/responsive_layout.dart';
@@ -36,46 +37,50 @@ class _BestSellingViewBodyState extends State<BestSellingViewBody> {
     final productsCubit = context.watch<ProductsCubit>();
     final horizontalPadding = ResponsiveLayout.horizontalPadding(context);
 
-    return Align(
-      alignment: Alignment.topCenter,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1200),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 16),
-                    SearchTextField(
-                      controller: _searchController,
-                      onChanged: context.read<ProductsCubit>().searchProducts,
-                      selectedSortOption: productsCubit.selectedSortOption,
-                      onSortSelected:
-                          context.read<ProductsCubit>().updateSortOption,
-                    ),
-                    const SizedBox(height: 12),
-                    ProductsViewHeader(
-                      productsLength: productsCubit.productsLength,
-                      isSortActive:
-                          productsCubit.selectedSortOption !=
-                          ProductsSortOption.none,
-                      onFilterTap: () {
-                        showProductsSortBottomSheet(
-                          context: context,
-                          selectedOption: productsCubit.selectedSortOption,
-                          onSelected:
-                              context.read<ProductsCubit>().updateSortOption,
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                  ],
+    return ConnectionGate(
+      hasUsableCache: productsCubit.hasUsableCache,
+      onRetry: () => context.read<ProductsCubit>().getBestSellingProducts(),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      SearchTextField(
+                        controller: _searchController,
+                        onChanged: context.read<ProductsCubit>().searchProducts,
+                        selectedSortOption: productsCubit.selectedSortOption,
+                        onSortSelected:
+                            context.read<ProductsCubit>().updateSortOption,
+                      ),
+                      const SizedBox(height: 12),
+                      ProductsViewHeader(
+                        productsLength: productsCubit.productsLength,
+                        isSortActive:
+                            productsCubit.selectedSortOption !=
+                            ProductsSortOption.none,
+                        onFilterTap: () {
+                          showProductsSortBottomSheet(
+                            context: context,
+                            selectedOption: productsCubit.selectedSortOption,
+                            onSelected:
+                                context.read<ProductsCubit>().updateSortOption,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
                 ),
-              ),
-              const ProductsGridViewBlocBuilder(),
-            ],
+                const ProductsGridViewBlocBuilder(),
+              ],
+            ),
           ),
         ),
       ),

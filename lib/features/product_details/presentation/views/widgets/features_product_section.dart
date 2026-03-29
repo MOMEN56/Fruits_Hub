@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fruit_hub/core/entities/product_entity.dart';
+import 'package:fruit_hub/core/helper_fun/format_weight_in_kilos.dart';
 import 'package:fruit_hub/core/utils/assets.dart';
 import 'package:fruit_hub/generated/l10n.dart';
 import 'package:fruit_hub/features/product_details/presentation/views/widgets/feature_product_container.dart';
@@ -18,7 +19,9 @@ class FeaturesProductSection extends StatelessWidget {
       builder: (context, constraints) {
         final hasTwoColumns = constraints.maxWidth >= 280;
         final itemWidth =
-            hasTwoColumns ? (constraints.maxWidth - 16) / 2 : constraints.maxWidth;
+            hasTwoColumns
+                ? (constraints.maxWidth - 16) / 2
+                : constraints.maxWidth;
 
         return Wrap(
           spacing: 16,
@@ -39,7 +42,7 @@ class FeaturesProductSection extends StatelessWidget {
             FeatureProductContainer(
               width: itemWidth,
               title: l10n.calories(productEntity.numberOfCalories.toString()),
-              subtitle: l10n.grams(productEntity.unitAmount.toString()),
+              subtitle: formatWeightInKilos(l10n, productEntity.unitAmount),
               icon: SvgPicture.asset(Assets.assetsImagesCalorie),
             ),
             FeatureProductContainer(

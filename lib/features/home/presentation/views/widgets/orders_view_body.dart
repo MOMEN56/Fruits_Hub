@@ -1,8 +1,10 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/connectivity/connection_gate.dart';
+import 'package:fruit_hub/core/connectivity/connection_service.dart';
 import 'package:fruit_hub/core/repos/order_repo/order_repo.dart';
 import 'package:fruit_hub/core/services/current_user_service.dart';
 import 'package:fruit_hub/core/services/get_it_services.dart';
@@ -38,11 +40,14 @@ class _OrdersViewBodyContent extends StatefulWidget {
   const _OrdersViewBodyContent();
 
   @override
-  State<_OrdersViewBodyContent> createState() => _OrdersViewBodyContentState();
+  State<_OrdersViewBodyContent> createState() =>
+      _OrdersViewBodyContentState();
 }
 
 class _OrdersViewBodyContentState extends State<_OrdersViewBodyContent> {
-  final NotificationsService _notificationsService = NotificationsService();
+  final NotificationsService _notificationsService = NotificationsService(
+    connectionService: getIt<ConnectionService>(),
+  );
   StreamSubscription<List<NotificationEntity>>? _subscription;
   String? _lastSeenOrderStatusNotificationId;
 

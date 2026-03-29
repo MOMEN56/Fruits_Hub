@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
@@ -6,13 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'
     show PostgrestException, Supabase;
 
-import 'package:fruit_hub/constants.dart';
 import 'package:fruit_hub/core/errors/exceptions.dart';
 import 'package:fruit_hub/core/errors/failures.dart';
 import 'package:fruit_hub/core/services/data_service.dart';
-import 'package:fruit_hub/core/services/firebase_auth_service.dart';
-import 'package:fruit_hub/core/services/shared_preferences_singleton.dart';
 import 'package:fruit_hub/core/services/current_user_service.dart';
+import 'package:fruit_hub/core/services/firebase_auth_service.dart';
 import 'package:fruit_hub/core/utils/backend_endpoints.dart';
 import 'package:fruit_hub/features/auth/data/models/user_model.dart';
 import 'package:fruit_hub/features/auth/domain/entites/user_entity.dart';
@@ -158,9 +155,8 @@ class AuthRepoImpl extends AuthRepo {
     return UserModel.fromJson(userData);
   }
 
-  Future saveUserData({required UserEntity user}) async {
-    final jsonData = jsonEncode(UserModel.fromEntity(user).toMap());
-    await Prefs.setString(kUserData, jsonData);
+  Future<void> saveUserData({required UserEntity user}) async {
+    await currentUserService.saveCurrentUser(user);
   }
 
   Future<UserEntity> _handleUserAfterAuth(User user) async {
@@ -234,7 +230,7 @@ class AuthRepoImpl extends AuthRepo {
     await _deleteUserDevices();
 
     await firebaseAuthService.signOut();
-    await Prefs.setString(kUserData, '');
+    await currentUserService.clearCurrentUser();
   }
 
   Future<void> _deleteUserDevices() async {

@@ -38,12 +38,16 @@ class _ConnectionGateState extends State<ConnectionGate> {
   bool _isRecovering = false;
 
   Future<void> _retry() async {
-    if (_isRecovering || widget.onRetry == null) {
+    final onRetry = widget.onRetry;
+    if (_isRecovering || onRetry == null) {
       return;
     }
 
     final connectionCubit = context.read<ConnectionCubit>();
     await connectionCubit.refresh();
+    if (!mounted) {
+      return;
+    }
     if (connectionCubit.state != ConnectionStatus.online) {
       return;
     }
@@ -53,7 +57,7 @@ class _ConnectionGateState extends State<ConnectionGate> {
     });
 
     try {
-      await widget.onRetry!();
+      await onRetry();
     } finally {
       if (mounted) {
         setState(() {

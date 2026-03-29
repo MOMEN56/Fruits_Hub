@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fruit_hub/core/connectivity/connection_service.dart';
 import 'package:fruit_hub/core/services/current_user_service.dart';
 import 'package:fruit_hub/core/services/get_it_services.dart';
 import 'package:fruit_hub/core/widgets/custom_app_bar.dart';
@@ -15,7 +16,10 @@ class NotificationsViewArgs {
 }
 
 class NotificationsView extends StatelessWidget {
-  const NotificationsView({super.key, this.args = const NotificationsViewArgs()});
+  const NotificationsView({
+    super.key,
+    this.args = const NotificationsViewArgs(),
+  });
 
   static const routeName = 'notifications-view';
   final NotificationsViewArgs args;
@@ -24,7 +28,7 @@ class NotificationsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => NotificationsCubit(
-        NotificationsService(),
+        NotificationsService(connectionService: getIt<ConnectionService>()),
         getIt<CurrentUserService>(),
       ),
       child: Scaffold(

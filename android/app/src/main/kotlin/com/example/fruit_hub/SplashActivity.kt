@@ -11,7 +11,11 @@ class SplashActivity : Activity() {
         super.onCreate(savedInstanceState)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
+            val mainIntent = Intent(this, MainActivity::class.java)
+            // Forward FCM notification extras so getInitialMessage() /
+            // onMessageOpenedApp receive the tap payload.
+            intent.extras?.let { mainIntent.putExtras(it) }
+            startActivity(mainIntent)
             overridePendingTransition(0, 0)
             finish()
         }, SPLASH_DELAY_MS)

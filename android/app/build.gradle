@@ -1,11 +1,3 @@
-def secretsProperties = new Properties()
-def secretsPropertiesFile = rootProject.file("secrets.properties")
-if (secretsPropertiesFile.exists()) {
-    secretsPropertiesFile.withInputStream { stream ->
-        secretsProperties.load(stream)
-    }
-}
-
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -14,6 +6,14 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+def secretsProperties = new Properties()
+def secretsPropertiesFile = rootProject.file("secrets.properties")
+if (secretsPropertiesFile.exists()) {
+    secretsPropertiesFile.withInputStream { stream ->
+        secretsProperties.load(stream)
+    }
 }
 
 android {
@@ -40,6 +40,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         manifestPlaceholders = [
+            applicationName: "android.app.Application",
             facebookAppId: secretsProperties.getProperty("FACEBOOK_APP_ID", ""),
             facebookClientToken: secretsProperties.getProperty("FACEBOOK_CLIENT_TOKEN", ""),
             facebookLoginProtocolScheme: secretsProperties.getProperty("FACEBOOK_LOGIN_PROTOCOL_SCHEME", ""),

@@ -14,9 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseService.initSupabase();
 
-  await Firebase.initializeApp(
-    options: RuntimeFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: RuntimeFirebaseOptions.currentPlatform);
   await Prefs.init();
   setupGetIt();
   AppStartupService.initialize();
