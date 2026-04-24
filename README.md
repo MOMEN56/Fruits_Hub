@@ -2,6 +2,8 @@
 
 ## Demo Video
 
+[![Watch the project walkthrough](https://img.youtube.com/vi/IGN0yAw0GXo/maxresdefault.jpg)](https://youtu.be/IGN0yAw0GXo?si=BIA_u9XmlOxp5J0u)
+
 [Watch the project walkthrough on YouTube](https://youtu.be/IGN0yAw0GXo?si=BIA_u9XmlOxp5J0u)
 
 `Fruits_Hub` is the customer-facing Flutter application in a connected e-commerce ecosystem that also includes `Fruits_Hub_Dashboard` for admin operations. The mobile app handles catalog browsing, cart management, checkout, orders, and customer notifications, while the dashboard manages products, order operations, notifications, and product visibility.
